@@ -30,7 +30,6 @@ def models():
 def index(request):
 	model_classes = models()
 	model_form = dbForm()
-	#request.session['model_classes_field'] = mchoices
 	print "NOOOTTTTTTTTTTTTTTTTTTTTTT VALIDDDDDDDDDDDDDD FORM!"
 	if request.method == 'POST':
 		model_form = dbForm(request.POST)
