@@ -1,0 +1,37 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'Directories/style.css' %}" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+	</script> 
+    <title>{% block title %}You are at Directories app{% endblock %}</title>
+</head>
+
+<body>
+	{% block navigation %}
+		<div id="top">
+				<ul class="navBar">
+					<li><a href="list.html"> Katalogos onomatwn </a></li>
+					<li><a href="http://www.uom.gr"> Panepistimio Makedonias </a></li>
+					<li><a href="about.html"> About page </a></li>
+				</ul>
+		</div>
+		
+	{% endblock %}
+	{% block jquery %} 
+		<script> 
+		$( document ).ready(function() {
+		alert( "ready!" );
+		});
+		</script>
+	{% endblock %}
+	{% block content %}
+	<div id="content">
+		<h2> This is the setup </h2>
+	</div>
+	<div id="bottom">			
+	</div>	
+	{% endblock %}
+</body>
+</html>

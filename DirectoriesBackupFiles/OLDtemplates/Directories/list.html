@@ -1,0 +1,21 @@
+{% extends "Directories/base.html" %}
+    
+{% block title %} Directories App {% endblock %}
+
+{% block content%} 
+	<div id="content" align="center">
+		<h2> Welcome! this is Directories app! </h2> 
+		<br />
+			{{model_class}}
+		<table>
+		<tr>
+			<th>Department Id</th>
+			<th>Tmima per</th>
+		</tr>
+		<tr> 
+			<td> {{ de }} </td>
+			<td> {{ de.tmima_per }} </td>
+		</tr>			
+		</table>
+	</div>
+{% endblock %}

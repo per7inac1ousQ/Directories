@@ -1,0 +1,29 @@
+{% extends "Directories/base_create.html" %}
+
+{% block title %} Directories App {% endblock %}
+{% block content%} 
+	<h2> Welcome! this is Directories app! </h2> 
+	Number of attributes: {{ dir_list|length }}
+	<br />
+	<table cellspacing="6" cellpadding="4">
+	<tr>
+		<th>Attribute Id</th>
+		<th>Description</th>
+		<th>English Description</th>
+		<th>Notes</th>
+	</tr>
+	{% for de in dir_list %}
+	<tr> 
+		<td> {{ de.tmima_per }} </td>
+		<td> {{ de.descr }} </td>
+		<td> {{ de.descr_en }} </td>
+		<td> {% if not de.notes %}
+			 	-
+			 {% else %}
+			 	{{ de.notes }}
+			 {% endif %}
+		</td>
+	</tr>
+	{% endfor %}
+	</table>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "Directories/base.html" %}
+{% block title %} Directories App {% endblock %}
+<body>
+{% block jquery %} 
+	<script> 
+//	function get_action(){
+		// collect the m_id from the selected option in the <select> tag			
+//		var m_id = $("#id_model_classes_field" ).val();
+		// put m_id in the form action URL to bring the list.html page
+//		document.dbForm.action = m_id + "/"	
+//	}
+	</script>
+{% endblock %}
+{% block content%} 
+	<div id="content" align="center">		
+		<h2> Welcome! this is Directories app! </h2> 
+		<!-- alternative URL action = "{0% url 'Directories:list_models' 5 %}" --- needs this: {0% load url from future %} before the form initialisation-->
+		<form action="list" name="dbForm" method="post">{% csrf_token %}
+<!-- onsubmit="return get_action();" -->
+<label for="id_model_classes_field">Choose from one of the existing tables:</label> 
+			<select id="id_model_classes_field" name="model_classes_field"> 
+				{% for choice in model_form.fields.model_classes_field.choices %} 
+					<option name="m_id" value="{{ choice.model_name }}">{{choice.model_id}}: {{choice.model_name}}</option>
+				<!--option name="m_id" value="{{ choice.model_name }}"> </option -->
+				{% endfor %}
+			</select> <br /> 
+					<input type="submit" value="Submit"/>
+		</form>
+	</div>
+	<div id="bottom">
+		
+	</div>
+{% endblock %}
+</body>
