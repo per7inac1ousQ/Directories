@@ -60,7 +60,7 @@ class KatefthKykloi(models.Model):
     kat_id = models.IntegerField(primary_key=True)
     kyklos_id = models.IntegerField()
     class Meta:
-        db_table = 'katefth_kykloi'
+        db_table = 'katefthKykloi'
 	unique_together = ("kat_id", "kyklos_id")
 	verbose_name= 'Katefthnsh kykloi'
 
@@ -84,7 +84,7 @@ class KykloiExamina(models.Model):
     notes_en = models.CharField(max_length=255, blank=True)
     comments = models.TextField(blank=True)
     class Meta:
-        db_table = 'kykloi_examina'
+        db_table = 'kykloiExamina'
 	verbose_name= 'Kykloi examina'
 
 class ModuleKykloi(models.Model):
@@ -93,7 +93,7 @@ class ModuleKykloi(models.Model):
     semester = models.IntegerField(default='0')
     indexing = models.IntegerField(default='99')
     class Meta:
-        db_table = 'module_kykloi'
+        db_table = 'moduleKykloi'
 	unique_together = (("module_id", "kyklos_id", "semester"),)
 	verbose_name= 'Modules Kyklwn'
 
@@ -115,7 +115,7 @@ class ModulesTutors(models.Model):
     tutor_id = models.IntegerField(default='0')
     last_update = models.DateTimeField()
     class Meta:
-        db_table = 'modules_tutors'
+        db_table = 'modulesTutors'
 	unique_together = (("module_id", "tutor_id"),)
 	verbose_name= 'Modules tutors'
 
@@ -125,7 +125,7 @@ class PubInstr(models.Model):
     cduom = models.IntegerField(default='1')
     lastupdate = models.DateTimeField()
     class Meta:
-        db_table = 'pub_instr'
+        db_table = 'pubInstr'
 	unique_together = (("pubid", "instrid"),)
 	verbose_name= 'Publication instr'
 
@@ -134,7 +134,7 @@ class PubTypes(models.Model):
     type_description = models.CharField(max_length=255)
     lastupdate = models.DateTimeField()
     class Meta:
-        db_table = 'pub_types'
+        db_table = 'pubTypes'
 	verbose_name= 'Publication types'
 
 class Publications(models.Model):

@@ -21,9 +21,9 @@ def models():
 		m_id += 1
 		model_classes.append({
 			'model_name': model._meta.verbose_name,
-			'model_id': m_id
-			#'model_table': model._meta.db_table,  ----display each table of the db
-			#'model_object': model.objects.all()   ----display all objects
+			'model_id': m_id,
+			'model_table': model._meta.db_table,
+			'model_object': model.objects.all()  
 		})
 	return model_classes
 
@@ -49,10 +49,15 @@ def create(request):
 
 def dlist(request):
 	#get the model id selected in the POST form and convert it to an integer
-	m_name= request.POST['model_classes_field']
-	model_class = get_model('Directories', m_name)
+	print "POST request received: "	
+	print request.POST['model_classes_field']
+	m_tb_name= request.POST['model_classes_field']
+	model_class = get_model('Directories', m_tb_name)
+	mod = get_model('Directories', 'katefth_kykloi')
 	print "problematic table:"
 	print model_class	
+	print "new mod object: "
+	print mod
 #	model_list = model_class.objects.all()
 ###################################################
 # how the data will be handled in list.html
@@ -65,9 +70,9 @@ def dlist(request):
 #dep_field[0].rel.to
 #Out[5]: <class 'timesite.timeapp.models.Department'>
 ######################################################3
-	print 'You searched for: %r' % m_name
+	print 'You searched for: %r' % m_tb_name
 # take the model_name through POST and populate the tables....
-	return render(request, 'Directories/list.html', {'m_name':m_name, 'model_class':model_class})
+	return render(request, 'Directories/list.html', {'m_tb_name':m_tb_name, 'model_class':model_class})
 
 class dbForm(forms.Form):
 	model_classes_field = forms.ChoiceField(choices=models())

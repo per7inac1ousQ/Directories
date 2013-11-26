@@ -20,7 +20,7 @@
 <label for="id_model_classes_field">Choose from one of the existing tables:</label> 
 			<select id="id_model_classes_field" name="model_classes_field"> 
 				{% for choice in model_form.fields.model_classes_field.choices %} 
-					<option name="m_id" value="{{ choice.model_name }}">{{choice.model_id}}: {{choice.model_name}}</option>
+					<option name="m_id" value="{{ choice.model_table }}">{{choice.model_id}}: {{choice.model_name}}</option>
 				<!--option name="m_id" value="{{ choice.model_name }}"> </option -->
 				{% endfor %}
 			</select> <br /> 
