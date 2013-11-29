@@ -6,15 +6,38 @@
 	<div id="content" align="center">
 		<h2> Welcome! this is Directories app! </h2> 
 		<br />
+			<strong>
+			{% for mod in model_list %}
+				{% for f in fields %}
+					YEAHSSS {{ data.f }}  <br />
+<!-- u'%s %s' % (self.proedros, self.pr_spoudwn) -->
+				{% endfor %}		
+			{% endfor %}
+			</strong>
 			{{model_class}}
+			<!-- ta data tou attr_id vgainoun apo to mod.attr_id -->
+			<!-- to idio to attr_id einai to f.name -->
+			{{mod_field}}
+			{% for f in field_names %}	
+				fields: {{ f }} jokokok
+				stiff {{data}} stuff fuff
+				{% for mod in model_list %}
+					OBJECT: {{ mod }} to mod <br /> <br />	
+					DATA: {{data.f}}
+					
+				{% endfor %}	<br />					
+			{% endfor %}
+			{{stuff}}
 		<table>
 		<tr>
-			<th>Department Id</th>
-			<th>Tmima per</th>
+			{% for f in fields %}
+			<th>{{ f.verbose_name }}</th>
+			{% endfor %}
 		</tr>
 		<tr> 
-			<td> {} </td>
-			<td> {} </td>
+			{% for mod in model_list %}
+			<td> {{mod}}</td>
+			{% endfor %}
 		</tr>			
 		</table>
 	</div>
