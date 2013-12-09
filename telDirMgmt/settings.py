@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Directories',
+	'Directories.templatetags.dir_extras',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -60,9 +61,14 @@ DATABASES = {'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'praktiki-uomdb',
 		'USER': 'praktikos',
-		'PASSWORD': '***********',
+		'PASSWORD': 'patuom123!',
 		'HOST': '195.251.213.90',
 		'PORT': '3306',
+		'OPTIONS': {
+                    'charset': 'latin1',
+					#'charset': 'windows-1253'
+					#'charset' : 'utf8',
+                    'use_unicode': True, },#greek_general_ci
     }
 }
 

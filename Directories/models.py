@@ -13,7 +13,7 @@ from django.db import models
 attr_data = []
 
 class Attributes(models.Model):
-    attr_id = models.AutoField(primary_key=True, verbose_name="Id")
+    _attr_id = models.AutoField(max_length=11, primary_key=True, verbose_name="Id")
     descr = models.CharField(max_length=140, verbose_name="Description")
     descr_en = models.CharField(max_length=140, verbose_name="English Description")
     notes = models.CharField(max_length=250, blank=True, verbose_name="Notes")
@@ -21,8 +21,51 @@ class Attributes(models.Model):
         db_table = 'attributes'
         verbose_name= 'Attributes'
     def __unicode__(self):
-       return u'%s , %s' % (self.descr, self.descr_en)
-#list_display = ("FIRST_NAME", "LAST_NAME", "DATE_OF_BIRTH", "EMAIL", "PHONE")
+          return unicode(self.attr_id)
+    def get_field(self,field):
+		if field == self.attr_id:
+			return self.attr_id
+		elif field == self.descr:
+			return self.descr
+		elif field == self.descr_en:
+			return self.descr_en
+		else:
+			return self.notes
+
+class Employees(models.Model):
+    emp_id = models.AutoField(primary_key=True, verbose_name="Id")
+    lastname = models.CharField(max_length=110, verbose_name="Last name")
+    lastname_en = models.CharField(max_length=110, blank=True, verbose_name="Last name english") 
+    firstname = models.CharField(max_length=50, verbose_name="First name")
+    firstname_en = models.CharField(max_length=50, blank=True, verbose_name="First name english")
+    phone_home = models.CharField(max_length=12, blank=True, verbose_name="Home phone") 
+    phone_home_view = models.IntegerField(max_length=1, default='0', verbose_name="Home phone view") 
+    phone_mobile = models.CharField(max_length=12, blank=True, verbose_name="Mobile phone")
+    phone_mobile_view = models.IntegerField(max_length=1, default='0', verbose_name="Mobile phone view") 
+    email = models.CharField(max_length=50, blank=True, verbose_name="Email") 
+    fax = models.CharField(max_length=12, blank=True, verbose_name="FAX") 
+    url = models.CharField(max_length=70, blank=True, verbose_name="URL") 
+    photo_path = models.CharField(max_length=70, blank=True, verbose_name="Photo path") 
+    office = models.CharField(max_length=70, blank=True, verbose_name="Office") 
+    building = models.CharField(max_length=70, blank=True, verbose_name="Building")
+    office_en = models.CharField(max_length=70, blank=True, verbose_name="Office english") 
+    building_en = models.CharField(max_length=70, blank=True, verbose_name="Building english")
+    address_home = models.CharField(max_length=150, blank=True, verbose_name="Home address")
+    zip_home = models.CharField(max_length=10, blank=True, verbose_name="Home zip code")
+    city = models.CharField(max_length=110, blank=True, verbose_name="City") 
+    address_view = models.IntegerField(max_length=1, default='0', verbose_name="Address view")
+    rank_id = models.IntegerField(max_length=11, default='1', verbose_name="Rank id")
+    notes = models.CharField(max_length=255, blank=True, verbose_name="Notes") 
+    public_view = models.IntegerField(max_length=1, default='1', verbose_name="Public view") 
+    middlename = models.CharField(max_length=3, blank=True, verbose_name="Middle name") 
+    middlename_en = models.CharField(max_length=3, blank=True, verbose_name="Middle name english") 
+    last_update = models.DateTimeField(verbose_name="last update")
+#default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+    class Meta:
+        db_table = 'employees'
+        verbose_name= 'Employees'
+    def __unicode__(self):
+        return u'%s !!!! %s' % (self.firstname, self.lastname)
 
 class Department(models.Model):
     id = models.AutoField(primary_key=True, verbose_name="Id")
@@ -53,8 +96,8 @@ class Instructors(models.Model):
     class Meta:
         db_table = 'instructors'
         verbose_name= 'Instructors'
-    def __unicode__(self, field):
-        return u'%s' % self.field
+    def __unicode__(self):
+        return u'%s' % self.subject
 ######
 def __init__(self, *args, **kwargs):
     super(CircuitForm, self).__init__(*args, **kwargs)
