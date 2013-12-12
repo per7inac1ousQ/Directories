@@ -13,7 +13,7 @@ from django.db import models
 attr_data = []
 
 class Attributes(models.Model):
-    _attr_id = models.AutoField(max_length=11, primary_key=True, verbose_name="Id")
+    attr_id = models.AutoField(max_length=11, primary_key=True, verbose_name="Id")
     descr = models.CharField(max_length=140, verbose_name="Description")
     descr_en = models.CharField(max_length=140, verbose_name="English Description")
     notes = models.CharField(max_length=250, blank=True, verbose_name="Notes")
@@ -92,6 +92,8 @@ class Instructors(models.Model):
     research_en = models.TextField(blank=True, verbose_name="Research english")
     subject = models.CharField(max_length=255, blank=True, verbose_name="subject")
     subject_en = models.CharField(max_length=255, blank=True, verbose_name="English subject")
+    activities = models.TextField(blank=True, verbose_name="activities") 
+    activities_en = models.TextField(blank=True, verbose_name="activities english")
     lastupdate = models.DateTimeField(verbose_name="last update")
     class Meta:
         db_table = 'instructors'
