@@ -5,13 +5,17 @@
 {% block content%} 
 	<div id="content" align="center">
 		<h2> Welcome! this is Directories app! </h2> 
-		<br />
-			{{model_class}}
+		<br /> {{field_list}}
+
+		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the outpu -->
+		{% model_data_table %}
+{{asa}}
 			<!-- ta data tou attr_id vgainoun apo to mod.attr_id -->
 			<!-- to idio to attr_id einai to f.name -->
 		{0% for f in field_names %}
 			{0% for mod in model_list %}
-					{0{ mod|field_name:f }}
+					{0{mod.attr_id}}
+					<!-- {0{ mod|field_name:f }} -->
 			{0% endfor %}
 		{0% endfor %}
 		{0{ n }}
@@ -20,14 +24,39 @@
 		{% for f in fields %}
 			<th>{{ f.verbose_name }}</th>
 		{% endfor %}
+			<th>Action</th>
 		</tr>		
-		{% for x in first_elem %}			
+		<!-- TEST implementation -->
+<!-- PREPEI NA KANW TA ROWS COLUMNS I TESPA TO ANAPODO APO AUTO POU KANW. 
+DUO TROPOI YPARXOYN:
+a) me javascript
+b) 8a ta kanw columns mesa apo to views kai meta 8a ta emfanisw...
+c) inclusion tag??
+-->
+		
+			
+			 <!-- columns number -->
+				
+				{% for key,val in y %}	
+				<tr>
+					{% for f in field_list %}
+						{% if f == key %}	
+							<td> {{val}} </td>
+						{% endif %}
+					{% endfor %}
+				</tr>				
+			{% endfor %}
+
+		<!-- RIGHT implementation -->
+		{% for x in k %}			
 		<tr>		
 				
-			{% for f in fields %}
-						 <td>{{x}} {0{ y }}</td> <!-- need sth like (mod|field_name) -->
+			{% for f in field_names %}
+				{% if f == field_list.0 %}
+						 <td>{{x}} </td> <!-- need sth like (mod|field_name) -->
+				{% endif %}	
 			{% endfor %}					
-		
+		 <td> <a href="">Edit</a> | <a href="">Details</a> | <a href="">Delete</a> </td>		
 		</tr>
 		{% endfor %}		
 		</table>

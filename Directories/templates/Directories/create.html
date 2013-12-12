@@ -5,7 +5,7 @@
 	<h2> Welcome! this is Directories app! </h2> 
 	Number of attributes: {{ dir_list|length }}
 	<br />
-	<table cellspacing="6" cellpadding="4">
+	<table>
 	<tr>
 		<th>Attribute Id</th>
 		<th>Description</th>
@@ -17,12 +17,6 @@
 		<td> {{ de.tmima_per }} </td>
 		<td> {{ de.descr }} </td>
 		<td> {{ de.descr_en }} </td>
-		<td> {% if not de.notes %}
-			 	-
-			 {% else %}
-			 	{{ de.notes }}
-			 {% endif %}
-		</td>
 	</tr>
 	{% endfor %}
 	</table>
