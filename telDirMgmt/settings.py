@@ -61,7 +61,7 @@ DATABASES = {'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'praktiki-uomdb',
 		'USER': 'praktikos',
-		'PASSWORD': 'patuom123!',
+		'PASSWORD': '***',
 		'HOST': '195.251.213.90',
 		'PORT': '3306',
 		'OPTIONS': {
