@@ -40,7 +40,12 @@ a:link {
 			overflow:auto;
 			}
 
-table, th, td
+.data-listing td,
+.data-listing th {
+	width: 10%;
+}
+
+table
 {
 border: 1px solid yellow;
 border-collapse:collapse;

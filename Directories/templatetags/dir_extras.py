@@ -9,42 +9,55 @@ def upper(value): # Only one argument.
     """Converts a string into all lowercase"""
     return value.upper()
 
-
-#@register.filter
-#def field_name(model, field_value):
-	#model.objects.get(field_value)
-	# get_field_d = model_class.objects.values_list(f_name)
-	#for k in model.objects.values_list(field_value):
-	#	return k
-	#my_filter = {}
-	#my_filter[my_keyword] = filter_value
-	#my_model = model.objects.filter(**my_filter)
-	#returns the field 
-	#model.__getitem__ = field_value
-	#return model[field_value]
 '''
-if not field_list:
-		z = create_field_list(model_class)#[count]
+def dlist(request):
 		print "field_list: ", z
 		count = 0
 		field_counter = 0
 		for f_name in field_names:	
 			for mod in model_list:
-				j = getattr(mod, field_list[count])	
-				#strj = '<td> %s </td>' %j		
+				j = getattr(mod, field_list[count])		
 				c.append(f_name)	
-				#k.append(strj)				
-				k.append(j)
-				
-				#j = j.encode('ISO 8859-7')
-				#j = j.encode('windows-1253').decode('utf-8')
+				k.append(j)	
 			count += 1
+	y = zip(c,k)
+	asa = ''.join(column.rjust(10) for column in str(k))
 '''
+
 @register.inclusion_tag('Directories/model_data.html')
-def model_data_table():
+def model_data_table(name):
+	model_class = get_model('Directories', name)
 	#Returns model data in table form
-	#for f_name in model._meta.get_all_field_names():
-	data_list = Attributes.objects.all()#select_related(f_name)
+	for field in model_class._meta.get_all_field_names():
+		data_list = model_class.objects.all()
 	return {'data_list':data_list}
+	#for f_name in model._meta.get_all_field_names():
+	#data_list = model_class.objects.all()#select_related(f_name)
+	
 #	return "hello"
+
+
+@register.inclusion_tag('Directories/model_data.html')
+def field_data(field):
+	#model_list = model_class.objects.all() 
+	#initialise fields and their names
+	#fields = model_class._meta.fields
+	#field_names = model_class._meta.get_all_field_names()
+	#s_field = model._meta.get_field(field).verbose_name	
+	data_list = Attributes.objects.values_list(field, flat=True)
+	#if s_field:		
+		#for mod in model.objects.all():		
+	return {'data_list':data_list}
+	#j = model.objects.all()
+	#return "hello"
+    #return getattr(model, field)	
+
+
+######## Ways to get specific field and/or its values #####################
+# 1) model._meta.get_field(field)
+# 2) model.objects.values(s_field)
+# 3) model.objects.values_list(s_field)
+# 4) getattr(model, field)
+
+
 
