@@ -2,22 +2,22 @@
 
 {% block title %} Directories App {% endblock %}
 {% block content%} 
-	<h2> Welcome! this is Directories app! </h2> 
-	Number of attributes: {{ dir_list|length }}
+	<h3> You have chosen id: {{req_data.0}} </h3> 
 	<br />
-	<table>
-	<tr>
-		<th>Attribute Id</th>
-		<th>Description</th>
-		<th>English Description</th>
-		<th>Notes</th>
-	</tr>
-	{% for de in dir_list %}
-	<tr> 
-		<td> {{ de.tmima_per }} </td>
-		<td> {{ de.descr }} </td>
-		<td> {{ de.descr_en }} </td>
-	</tr>
-	{% endfor %}
-	</table>
+	{% for f_name in field_names %}
+		{{ f_name }}
+	{% endfor %}<br />
+	{{req_data}}
+	<!-- kane counter me forloop (forloop.counter??) wste na deixnei ola ta stoixeia 
+	req_data. 
+	Mporei na ginei episis kai me .append() se lista -->
+	<form action="list" method="get">
+	{% for f_name in field_names %}	
+		{{f_name}}:	<input id="edit-{{f_name}}" type="text" name={{f_name}} /><br />
+	{% endfor %}<br />
+	<input type="submit" name="Submit" value="Update" />
+	<input type="reset" name="Clear" value="Clear" />
+	</form>	
+	
+	
 {% endblock %}

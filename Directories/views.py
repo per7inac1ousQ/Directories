@@ -11,6 +11,7 @@ from Directories.models import Department, Attributes
 from django.shortcuts import render, get_object_or_404
 from django.template import Template
 from django.core.paginator import Paginator
+from django.http import Http404
 
 
 model_classes = []
@@ -53,6 +54,9 @@ def index(request):
 def get_model_fields(model):
 	return model._meta.fields
 
+def get_field_data(model, field):
+	return model.objects.values_list(field, flat=True)
+
 def create(request):
 	dir_list = Department.objects.all()
 	return render(request, 'Directories/create.html', {'dir_list': dir_list})
@@ -74,6 +78,9 @@ def dlist(request):
 	#for f_name in field_names:	
 		#get_field_d = model_class.objects.filter('%s', [f_name])
 ###################################################
+	for f_name in field_names:	
+		data_list = list(get_field_data(model_class, f_name))
+	#row = model_class.objects.get(attr_id='?').values()
 
 	if not field_list:
 		z = create_field_list(model_class)#[count]
@@ -81,8 +88,10 @@ def dlist(request):
 		count = 0
 		field_counter = 0
 		for f_name in field_names:	
+			
 			for mod in model_list:
-				j = getattr(mod, field_list[count])	
+				j = getattr(mod, field_list[count])
+				print j	
 				#strj = '''<td> %s </td>''' %j		
 				c.append(f_name)	
 				#k.append(strj)				
@@ -91,7 +100,7 @@ def dlist(request):
 				#j = j.encode('ISO 8859-7')
 				#j = j.encode('windows-1253').decode('utf-8')
 			count += 1
-	#z = remove_field_list(model_class) ####NOTE: removes field_list. you may need it
+	#z = remove_field_list(model_class) ##!!NOTE: removes field_list. you may need it
 	y = zip(c,k)
 	#first_elem = [i[0] for i in y]
 	#if request.GET.get('model_fields'):
@@ -103,10 +112,31 @@ def dlist(request):
 	#for row in k:
 		#for column in str(row):
 			#print ''.join(str(column).rjust(10))	
-	print "type asa: ", type(asa)
-	return render(request, 'Directories/list.html', {'m_tb_name':m_tb_name, 'model_class':model_class, 'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 'y':y, 'c':c, 'k':k, 'asa':asa})
+#	if request.method == 'GET':
+		#form = editForm(request.GET)
+		#if form.is_valid():
 
+		#	return HtpResponseRedirect('/thanks')
+		#else:
+			#form = ContactForm() # An unbound form
 
+   		 #return render(request, 'create.html', {
+        #'form': form,
+   		#})
+	return render(request, 'Directories/list.html', {'m_tb_name':m_tb_name, 'model_class':model_class, 'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 'y':y, 'c':c, 'k':k, 'asa':asa, 'data_list':data_list})
+
+def modelUpdate(request, model_id):
+    #pk=4
+    try:	
+		req_data = Attributes.objects.get(pk=model_id)
+		#fields_len = len(req_data) #??????????????????????
+        #req_data = Attributes.objects.values_list(flat=True).get(pk=id)
+    except Attributes.DoesNotExist:
+        raise Http404    
+    field_names = Attributes._meta.get_all_field_names()
+    print req_data
+    return render(request, 'Directories/create.html', {'req_data':req_data, 'field_names':field_names})
+    #return HttpResponse("You are looking at item with id = %s." % pk)	
 
 #returns a list of field names
 def create_field_list(model):
@@ -123,7 +153,12 @@ def remove_field_list(model):
 
 class dbForm(forms.Form):
 	model_classes_field = forms.ChoiceField(choices=models(), required=True,)
+
+
+#class editForm(forms.Form):
+#	id_field = forms.CharField(id)
 	
+
 #class listForm(forms.Form):
 	#model_fields = forms.ChoiceField()
 
