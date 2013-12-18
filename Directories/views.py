@@ -30,7 +30,11 @@ def models():
 			'model_name': model._meta.verbose_name,
 			'model_id': m_id,
 			'model_table': model._meta.db_table,
+<<<<<<< HEAD
 			#'model_objects': model.objects.all()  
+=======
+			'model_object': model.objects.all()  
+>>>>>>> adf0caf... argument form  passing
 		})
 	return model_classes
 
@@ -67,6 +71,7 @@ def attrUpdate(request):
 
 def dlist(request):
 	#get the model id selected in the POST form and convert it to an integer
+<<<<<<< HEAD
 	m_tb_name= request.POST.get('model_classes_field')
 	print 'You searched for: %r' % m_tb_name
 	model_class = get_model('Directories', m_tb_name)
@@ -150,6 +155,32 @@ def remove_field_list(model):
 	for f_name in model._meta.get_all_field_names():
 		field_list.remove(f_name)
 	return field_list
+=======
+	print "POST request received: "	
+	print request.POST['model_classes_field']
+	m_tb_name= request.POST['model_classes_field']
+	model_class = get_model('Directories', m_tb_name)
+	mod = get_model('Directories', 'katefth_kykloi')
+	print "problematic table:"
+	print model_class	
+	print "new mod object: "
+	print mod
+#	model_list = model_class.objects.all()
+###################################################
+# how the data will be handled in list.html
+#model = models.get_model('timeapp', 'Employee')
+#	dep_field = model_class._meta.get_field_by_name('attr_id')
+#	print dep_field
+#dep_field[0].rel.field_name
+#Out[4]: 'id'
+#In [5]: 
+#dep_field[0].rel.to
+#Out[5]: <class 'timesite.timeapp.models.Department'>
+######################################################3
+	print 'You searched for: %r' % m_tb_name
+# take the model_name through POST and populate the tables....
+	return render(request, 'Directories/list.html', {'m_tb_name':m_tb_name, 'model_class':model_class})
+>>>>>>> adf0caf... argument form  passing
 
 class dbForm(forms.Form):
 	model_classes_field = forms.ChoiceField(choices=models(), required=True,)

@@ -20,6 +20,7 @@
 {{ form.model_classes_field.errors }}
 <label for="id_model_classes_field">Choose from one of the existing tables:</label> 
 			<select id="id_model_classes_field" name="model_classes_field"> 
+<<<<<<< HEAD
 			{% for choice in form.fields.model_classes_field.choices %}
 				<option name="m_id" value="{{ choice.model_table }}">{{choice.model_id}}: {{choice.model_name}}</option> 
 
@@ -30,6 +31,12 @@
 			{% endfor %} 
 
 
+=======
+				{% for choice in model_form.fields.model_classes_field.choices %} 
+					<option name="m_id" value="{{ choice.model_table }}">{{choice.model_id}}: {{choice.model_name}}</option>
+				<!--option name="m_id" value="{{ choice.model_name }}"> </option -->
+				{% endfor %}
+>>>>>>> adf0caf... argument form  passing
 			</select> <br /> 
 					<input type="submit" value="Submit"/>
 		</form>
