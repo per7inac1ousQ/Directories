@@ -6,6 +6,7 @@
 	<div id="content" align="center">
 		<h2> Welcome! this is Directories app! </h2> 
 		<br /> {{field_list}}
+<<<<<<< HEAD
 		<table>		
 		{0% for mod in model_list %}
 			{0{mod|field_values}}
@@ -23,6 +24,10 @@
 		{0% endfor %}
 		<tr><td>aheafaesfsef</td></tr>
 		</table>
+=======
+
+		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the output -->
+>>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
 		<table class="data-listing">
 		<tr>
 		{% for f in fields %}
@@ -30,6 +35,7 @@
 		{% endfor %}
 			<th>Action</th>
 		</tr>	
+<<<<<<< HEAD
 		<!-- TEST 3 implementaion ---------------->
 		<!-- dn emfanizei tipt -->
 		{% for row in model_list.rows %}
@@ -42,6 +48,11 @@
 		{% endfor %}
 		<!-- TEST 2 implementaion ---------------->
 		<!---------- WORKS!! ---------->	
+=======
+
+		<!-- TEST 2 implementaion ---------------->
+		<!---------- WORKS!! ----???------>	
+>>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
 		<tr>
 		{% for field in fields %}
 			<th class="column-{{ field.verbose_name|slugify }}">{{ field.verbose_name|slugify }}</th>
@@ -49,6 +60,7 @@
 			<th>Action</th>
 		</tr>	
 		<tr>
+<<<<<<< HEAD
 			{% for f_name in field_names %}				
 				<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_data f_name %} </td>
 			{% endfor %}
@@ -70,18 +82,52 @@
 				{% endif %}				
 			{% endfor %}
 		<!-- CORRECT implementation -->
+=======
+<!----------- mipws na min to kanw me inclusion tag alla na to valw sto 
+views.py ----------->
+			{% for f_name in field_names %}
+					<td class="column-{{ f_name|slugify }}"> {% field_data f_name %} </td>
+			{% endfor %}
+		</tr>	
+		<!-- TEST implementation -->
+<!-- PREPEI NA KANW TA ROWS COLUMNS I TESPA TO ANAPODO APO AUTO POU KANW. 
+DUO TROPOI YPARXOYN:
+a) me javascript
+b) custom template filter wste na kanw to mod.attr_id 
+c) inclusion tag?? (ama valw while-loop tote mporei na xreiastei)
+-->
+				
+				{% for key,val in y %}	
+				<tr>
+					{% for f in field_list %}
+<!-- check key and print first element of every row.. however, i need to display the rest of the row elements -->
+						{% if key == f %}	
+							{% if val != None %}
+								<td> {{val}} </td>
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+				</tr>				
+			{% endfor %}
+		<!-- RIGHT implementation -->
+>>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
 		{% for x in k %}			
 		<tr>		
 				
 			{% for f in field_names %}
 				{% if f == field_list.0 %}
+<<<<<<< HEAD
 						<form>
 						<td>{{x}} </td> <!-- need sth like (mod|field_name) -->
 						</form>
+=======
+						 <td>{{x}} </td> <!-- need sth like (mod|field_name) -->
+>>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
 				{% endif %}	
 			{% endfor %}					
 		 <td> <a href="Directories/create.html">Edit</a> | <a href="">Details</a> | <a href="">Delete</a> </td>		
 		</tr>
+<<<<<<< HEAD
 
 		{% endfor %}		
 		<!-- well-known imlementation -->
@@ -95,6 +141,9 @@
 			<td> {} </td>
 			<td> {} </td>
 		</tr>			
+=======
+		{% endfor %}		
+>>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
 		</table>
 	</div>
 {% endblock %}
