@@ -46,12 +46,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'Directories',
 	'Directories.templatetags.dir_extras',
-<<<<<<< HEAD
 	'crispy_forms',
 	'crispy_forms_foundation', #use this to implement specific template layout for use with the Foundation responsive web-design framework
 	'django_tables2',
-=======
->>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
 )
 
 MIDDLEWARE_CLASSES = (
@@ -75,7 +72,7 @@ DATABASES = {'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'praktiki-uomdb',
 		'USER': 'praktikos',
-		'PASSWORD': '***',
+		'PASSWORD': 'patuom123!',
 		'HOST': '195.251.213.90',
 		'PORT': '3306',
 		'OPTIONS': {

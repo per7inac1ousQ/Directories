@@ -22,18 +22,6 @@ class Attributes(models.Model):
         verbose_name= 'Attributes'
     def __unicode__(self):
           return unicode(self.attr_id)
-<<<<<<< HEAD
-=======
-    def get_field(self,field):
-		if field == self.attr_id:
-			return self.attr_id
-		elif field == self.descr:
-			return self.descr
-		elif field == self.descr_en:
-			return self.descr_en
-		else:
-			return self.notes
->>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
 
 class Employees(models.Model):
     emp_id = models.AutoField(primary_key=True, verbose_name="Id")

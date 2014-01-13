@@ -11,9 +11,10 @@
 
 <body>
 	{% block navigation %}
+	{% load url from future %}
 		<div id="top">
 				<ul class="navBar">
-					<li><a href="list"> Katalogos onomatwn </a></li>
+					<li><a href="{% url 'Directories:index'%}"> Αρχή </a></li>
 					<li><a href="http://www.uom.gr"> Panepistimio Makedonias </a></li>
 					<li><a href="about.html"> About page </a></li>
 				</ul>

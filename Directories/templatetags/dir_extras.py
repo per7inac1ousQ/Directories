@@ -9,7 +9,6 @@ def upper(value): # Only one argument.
     """Converts a string into all lowercase"""
     return value.upper()
 
-<<<<<<< HEAD
 @register.filter
 def field_values():
 	#data = model.objects.values_list(field, flat=True)
@@ -23,7 +22,7 @@ def get_random_testimonial():
 #@register.assignment_tag
 #def get_random_testimonial(field):
 #	return Attributes.objects.values_list(field, flat=True)
-=======
+
 '''
 def dlist(request):
 		print "field_list: ", z
@@ -51,8 +50,6 @@ def model_data_table(name):
 	
 #	return "hello"
 
->>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
-
 @register.inclusion_tag('Directories/model_data.html')
 def field_data(field):
 	#model_list = model_class.objects.all() 
@@ -61,17 +58,14 @@ def field_data(field):
 	#field_names = model_class._meta.get_all_field_names()
 	#s_field = model._meta.get_field(field).verbose_name	
 	data_list = Attributes.objects.values_list(field, flat=True)
-<<<<<<< HEAD
 	#data_list = Attributes.objects.get(id).values_list()		
 	return {'data_list':data_list}
-=======
 	#if s_field:		
 		#for mod in model.objects.all():		
 	return {'data_list':data_list}
 	#j = model.objects.all()
 	#return "hello"
     #return getattr(model, field)	
->>>>>>> afa76c68ac52b11cb70ac2e2a930c939c00d4e7f
 
 
 ######## Ways to get specific field and/or its values #####################

@@ -60,5 +60,25 @@ class RanksForm(forms.ModelForm):
 class ServiceForm(forms.ModelForm ):
 class UsersForm(forms.ModelForm):   
 class WorksForm(models.Model):
-'''
 
+# old models() method that iterates through all of the models in the database and 
+# returns their name and position
+def models():
+	apps = get_app('Directories')
+	m_id = 0
+	for model in get_models(apps):
+		m_id += 1
+		model_classes.append({
+			'model_name': model._meta.verbose_name,
+			'model_id': m_id,
+			'model_table': model._meta.db_table, 
+			'model_object': model.objects.all()  
+		})
+	return model_classes
+
+			'model_table': model._meta.db_table,
+			#'model_objects': model.objects.all()  
+		})
+	return model_classes
+
+'''
