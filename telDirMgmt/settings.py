@@ -1,3 +1,4 @@
+import django.conf.global_settings as DEFAULT_SETTINGS
 """
 Django settings for telDirMgmt project.
 
@@ -12,8 +13,15 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+    'django.core.context_processors.request',
+)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
+
+# Default layout to use with "crispy_forms"
+CRISPY_TEMPLATE_PACK = 'foundation'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 't_2tob1#mgc_dm_-fv6exu_ze!%9pu^n@=)dkg$*lwoxd*w26+'
@@ -38,6 +46,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'Directories',
 	'Directories.templatetags.dir_extras',
+	'crispy_forms',
+	'crispy_forms_foundation', #use this to implement specific template layout for use with the Foundation responsive web-design framework
+	'django_tables2',
 )
 
 MIDDLEWARE_CLASSES = (

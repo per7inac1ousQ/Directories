@@ -22,15 +22,6 @@ class Attributes(models.Model):
         verbose_name= 'Attributes'
     def __unicode__(self):
           return unicode(self.attr_id)
-    def get_field(self,field):
-		if field == self.attr_id:
-			return self.attr_id
-		elif field == self.descr:
-			return self.descr
-		elif field == self.descr_en:
-			return self.descr_en
-		else:
-			return self.notes
 
 class Employees(models.Model):
     emp_id = models.AutoField(primary_key=True, verbose_name="Id")
@@ -121,15 +112,12 @@ class KatefthKykloi(models.Model):
     kyklos_id = models.IntegerField(verbose_name="kykloi id")
     class Meta:
         db_table = 'katefthKykloi'
-<<<<<<< HEAD
         unique_together = ("kat_id", "kyklos_id")
         verbose_name= 'Katefthnsh kykloi'
     def __unicode__(self):
         return self.kat_id
-=======
 	unique_together = ("kat_id", "kyklos_id")
 	verbose_name= 'Katefthnsh kykloi'
->>>>>>> adf0caf... argument form  passing
 
 class Kykloi(models.Model):
     kyklos_id = models.AutoField(primary_key=True, verbose_name="Id")
@@ -154,13 +142,10 @@ class KykloiExamina(models.Model):
     comments = models.TextField(blank=True, verbose_name="comments")
     class Meta:
         db_table = 'kykloiExamina'
-<<<<<<< HEAD
         verbose_name= 'Kykloi examina'
     def __unicode__(self):
         return self.notes
-=======
 	verbose_name= 'Kykloi examina'
->>>>>>> adf0caf... argument form  passing
 
 class ModuleKykloi(models.Model):
     module_id = models.IntegerField(primary_key=True, default='0', verbose_name="module_id")
@@ -169,15 +154,12 @@ class ModuleKykloi(models.Model):
     indexing = models.IntegerField(default='99', verbose_name="indexing")
     class Meta:
         db_table = 'moduleKykloi'
-<<<<<<< HEAD
         unique_together = (("module_id", "kyklos_id", "semester"),)
         verbose_name= 'Modules Kyklwn'
     def __unicode__(self):
         return self.semester
-=======
 	unique_together = (("module_id", "kyklos_id", "semester"),)
 	verbose_name= 'Modules Kyklwn'
->>>>>>> adf0caf... argument form  passing
 
 class Modules(models.Model):
     id = models.AutoField(primary_key=True, verbose_name="Id")
@@ -200,15 +182,12 @@ class ModulesTutors(models.Model):
     last_update = models.DateTimeField(verbose_name="last_update")
     class Meta:
         db_table = 'modulesTutors'
-<<<<<<< HEAD
         unique_together = (("module_id", "tutor_id"),)
         verbose_name= 'Modules tutors'
     def __unicode__(self):
         return self.last_update
-=======
 	unique_together = (("module_id", "tutor_id"),)
 	verbose_name= 'Modules tutors'
->>>>>>> adf0caf... argument form  passing
 
 class PubInstr(models.Model):
     pubid = models.IntegerField(primary_key=True, default='0', verbose_name="pubid")
@@ -217,15 +196,12 @@ class PubInstr(models.Model):
     lastupdate = models.DateTimeField(verbose_name="lastupdate")
     class Meta:
         db_table = 'pubInstr'
-<<<<<<< HEAD
         unique_together = (("pubid", "instrid"),)
         verbose_name= 'Publication instr'
     def __unicode__(self):
         return self.lastupdate
-=======
 	unique_together = (("pubid", "instrid"),)
 	verbose_name= 'Publication instr'
->>>>>>> adf0caf... argument form  passing
 
 class PubTypes(models.Model):
     id = models.AutoField(primary_key=True, default='0', verbose_name="id")
@@ -233,13 +209,10 @@ class PubTypes(models.Model):
     lastupdate = models.DateTimeField(verbose_name="lastupdate")
     class Meta:
         db_table = 'pubTypes'
-<<<<<<< HEAD
         verbose_name= 'Publication types'
     def __unicode__(self):
         return self.lastupdate
-=======
 	verbose_name= 'Publication types'
->>>>>>> adf0caf... argument form  passing
 
 class Publications(models.Model):
     id = models.AutoField(primary_key=True, verbose_name="id")

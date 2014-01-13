@@ -2,22 +2,12 @@
 
 {% block title %} Directories App {% endblock %}
 {% block content%} 
-	<h3> You have chosen id: {{req_data.0}} </h3> 
+	<h3> You have chosen id: {{req_data}} </h3> 
 	<br />
-	{% for f_name in field_names %}
-		{{ f_name }}
-	{% endfor %}<br />
-	{{req_data}}
-	<!-- kane counter me forloop (forloop.counter??) wste na deixnei ola ta stoixeia 
-	req_data. 
-	Mporei na ginei episis kai me .append() se lista -->
-	<form action="list" method="get">
-	{% for f_name in field_names %}	
-		{{f_name}}:	<input id="edit-{{f_name}}" type="text" name={{f_name}} /><br />
-	{% endfor %}<br />
-	<input type="submit" name="Submit" value="Update" />
-	<input type="reset" name="Clear" value="Clear" />
-	</form>	
+	{{formset.management_form}}
+	{% for form in formset %}
+	{{form}}
 	
-	
+	{% endfor %}
+	<input type="submit" value="Submit" /> to submit dn prokuptei apo to formset apla to evala gia kallwpismo
 {% endblock %}

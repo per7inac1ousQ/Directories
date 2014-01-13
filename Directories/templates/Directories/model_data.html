@@ -4,26 +4,9 @@
 	
 	{% for data in data_list %}
 	<tr>
-		
 			<td> {{data}} </td>
+			<td><input type="submit" value="Edit" />	</td>
 	</tr>
 	{% endfor %}
 </table>
 
-<!--
-if not field_list:
-		z = create_field_list(model_class)#[count]
-		count = 0
-		field_counter = 0
-		for f_name in field_names:	
-			for mod in model_list:
-				j = getattr(mod, field_list[count])	
-				#strj = '<td> %s </td>' %j		
-				c.append(f_name)	
-				#k.append(strj)				
-				k.append(j)
-				
-				#j = j.encode('ISO 8859-7')
-				#j = j.encode('windows-1253').decode('utf-8')
-			count += 1
--->
