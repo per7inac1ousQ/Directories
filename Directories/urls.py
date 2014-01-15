@@ -3,7 +3,7 @@ from Directories import views
 
 urlpatterns = patterns('',
 	url(r'^$', views.index, name='index'),
-	url(r'^new$', views.create, name='create_directories'),
+	#url(r'^new$', views.create, name='create_directories'),
 	url(r'^list$', views.dlist, name='list_models'),
 	url(r'^edit$', views.modelUpdate, name='update_directories'),
 	#url(r'^(?P<m_id>\d+)/$', views.dlist, name='list_models'),

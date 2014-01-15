@@ -20,7 +20,7 @@ function get_action(submit){
                 <!-- alternative URL action = "{0% url 'Directories:list_models' 5 %}" --- needs this: {0% load url from future %} before the form initialisation
                 <form action="list" method="post">{% csrf_token %0} -->
 				{% load url from future %}
-				<form action="{% url 'Directories:list_models'%}" method="post">	{% csrf_token %}
+				<form action="{% url 'Directories:list_models'%}" method="get">	{% csrf_token %}
 <!-- onsubmit="return get_action();" -->
 {{ form.model_classes_field.errors }}
 <label for="id_model_classes_field">Choose from one of the existing tables:</label> 
@@ -40,7 +40,7 @@ function get_action(submit){
 
                         </select> <br /> 
                         <input type="submit" value="List items" name="_change" onclick="get_action(this);"/>
-						<input type="submit" value="Add" name="_add" onclick="get_action(this);" />
+						<input type="submit" value="Edit" name="_add" onclick="get_action(this);" />
                 </form>
     </div>
     <div id="bottom">
