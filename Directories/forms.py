@@ -32,8 +32,6 @@ class editForm(forms.Form):
 
 #create a ModelForm using a dynamic model
 def get_dynamic_form(c_model):
-	#ctype = ContentType.objects.get(pk=type_id)
-	#model_class = ctype.model_class()
 	model_class = get_model('Directories', c_model)
 	#field_names = model_class._meta.get_all_field_names()	
 	class ObjForm(forms.ModelForm ):
@@ -41,8 +39,6 @@ def get_dynamic_form(c_model):
 	        model = model_class
 			#for f_name in field_names:
 				#fields.append(f_name)
-		#def __init__(self, *args, **kwargs):
-		#	model_classes_field = forms.ChoiceField(choices=models(), required=True,)
 	return ObjForm
 
 ''' all possible model forms

@@ -17,6 +17,7 @@ from django.http import Http404
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.forms import Textarea
+from django.contrib import messages
 #import django_tables as tables 
 
 
@@ -27,7 +28,9 @@ k = []
 c = []
 
 def index(request): #for two submit buttons:
+	print "start"
 	form = dbForm()
+	print "form is: ", form
  	return render(request, 'Directories/index.html', {'form':form})
 # 1) check if POST data is sent and create two forms (maybe assign the same name)
 # 2) check if valid
@@ -75,53 +78,56 @@ def index(request): #for two submit buttons:
  -  })
  +'''
 
+'''
+	View that displays a list of all model objects
+'''
 def dlist(request):
 	print "list page"
-	if request.method == 'GET':
-		if 'model_classes_field' in request.GET: # If the form has been submitted...
-			print "get!!!"
-			form = dbForm(request.GET) # A form bound to the GET data
-			#print "check data", request.post.get("model_classes_field")
-			if form.is_valid(): # All validation rules pass
-				print "bound form, get data"
-				model_classes_field = form.cleaned_data['model_classes_field']
-				print "post data is: ", model_classes_field
-				model_class = get_model('Directories', model_classes_field) 
-				model_list = list(model_class.objects.all())
-				#		model_list.append("Edit") ################### Kane uncomment autes tis duo grammes gia na deis ama ginetai append to "Edit" sta stoixeia tou pinaka... mipws na xrisimopoiiseis UNION operations '|' gia na enwseis ta duo QuerySet
-				fields = get_model_fields(model_class)
-				field_names = model_class._meta.get_all_field_names()
-				data_list = list(get_field_data(model_class, "attr_id"))
-				if not field_list:
-					z = create_field_list(model_class)#[count]
-					print "field_list: ", z
-					count = 0
-					for f_name in field_names:	
-						for mod in model_list:
-							j = getattr(mod, field_list[count])
-							#j = j.encode('ISO 8859-7')
-							#j = j.encode('windows-1253').decode('utf-8')
-							c.append(f_name)			
-							k.append(j)
-						count += 1
-				y = zip(c,k)
-				#z = remove_field_list(model_class) ###################################!!NOTE: removes field_list. you may need it
-				asa = ''.join(column.rjust(10) for column in str(k))
-				return render(request, 'Directories/list.html', {'model_class':model_class, 'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 'y':y, 'c':c, 'k':k, 'asa':asa, 'data_list':data_list})		
-			else:
-				print "form errors: ", form.errors
-				return HttpResponse("-- ERROR: Please return to form submission --")
-		elif request.method == 'POST': 
-			if 'update' in request.POST: # If the form has been submitted...
-				print "POST form from edit view sent!"
-	#elif request.method == 'POST' and {{f_name}} in request.POST:
-		#print "YEAH"
+	if request.method == 'GET' or 'POST':
+		#if 'model_classes_field' in request.GET: # If the form has been submitted...
+		print "get!!!"
+		form = dbForm(request.GET) # A form bound to the GET data
+		#print "check data", request.post.get("model_classes_field")
+		if form.is_valid(): # All validation rules pass
+			print "bound form, get data"
+			model_classes_field = form.cleaned_data['model_classes_field']
+			print "post data is: ", model_classes_field
+			model_class = get_model('Directories', model_classes_field) 
+			model_name = model_class._meta.db_table
+			model_list = list(model_class.objects.all())
+			#		model_list.append("Edit") ################### Kane uncomment autes tis duo grammes gia na deis ama ginetai append to "Edit" sta stoixeia tou pinaka... mipws na xrisimopoiiseis UNION operations '|' gia na enwseis ta duo QuerySet
+			fields = get_model_fields(model_class)
+			field_names = model_class._meta.get_all_field_names()
+			# return a list of objects using values_list queryset
+			#data_list = list(get_field_data(model_class, "attr_id"))
+			if not field_list:
+				z = create_field_list(model_class)#[count]
+				print "field_list: ", z
+				count = 0
+				for f_name in field_names:	
+					for mod in model_list:
+						j = getattr(mod, field_list[count])
+						#j = j.encode('ISO 8859-7')
+						#j = j.encode('windows-1253').decode('utf-8')
+						c.append(f_name)			
+						k.append(j)
+					count += 1
+			y = zip(c,k)
+			#z = remove_field_list(model_class) ###################################!!NOTE: removes field_list. you may need it
+			asa = ''.join(column.rjust(10) for column in str(k))
+			return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 'y':y, 'c':c, 'k':k, 'asa':asa})		
+		else:
+			print "form errors: ", form.errors
+			return HttpResponse("-- ERROR: Please return to form submission --")
 	else:
 		form = dbForm() # An unbound form
 		print "no POST - form: ", form.errors
 		print "unbound form"
 		return render(request, 'Directories/index.html')
-
+	
+'''
+	View for adding a new row to a model dynamically.
+'''
 def modelUpdate(request):	
 	print "Edit page"
 	if request.method == 'GET': 
@@ -151,11 +157,15 @@ def modelUpdate(request):
 			form = form_class(request.POST)			
 			if form.is_valid(): # All validation rules pass
 				print "WOOOHOOOO form is valid!"
-				#row = form.save() #saves to database!!
-				return render(request, 'Directories/list.html')
+				print "form sent is: ", form
+				#row = form.save() #saves into database
+				#send a message to inform users that form submission was a success
+				messages.success(request, 'Model details updated.')
+				#print "get!!!", request.GET['model_classes_field']
+				return render(request, 'Directories/index.html', {'model_classes_field': request.GET['model_classes_field']})
 			else:
 				print "form errors: ", form.errors
-				return render(request, 'Directories/create.html')
+				return HttpResponse('ERROR -- Return to form submission')
 	else:
 		form = dbForm() # An unbound form
 		print "no form submission: ", form.errors

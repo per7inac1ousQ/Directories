@@ -6,7 +6,7 @@
 	<div id="content" align="center">
 		<h2> Welcome! this is Directories app! </h2> 
 		<br /> {{field_list}}
-		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the output -->
+		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the output -->		
 		<table class="data-listing">
 		<!-- TEST 2 implementaion ---------------->
 		<!---------- WORKS!! ----???------>	
@@ -17,27 +17,9 @@
 		</tr>	
 		<tr>
 			{% for f_name in field_names %}				
-				<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_data f_name %} </td>
+				<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_data model_name f_name %} </td>
 			{% endfor %}
 		</tr>	
-<!-- PREPEI NA KANW TA ROWS COLUMNS I TESPA TO ANAPODO APO AUTO POU KANW. 
-DUO TROPOI YPARXOYN:
-a) me javascript
-b) custom template filter wste na kanw to mod.attr_id 
-c) inclusion tag?? (ama valw while-loop tote mporei na xreiastei)
--->
-		
-		<!-- well-known imlementation -->
-		{% for mod in model_list %}	
-		<tr>
-			<td>{{mod.attr_id}}</td>
-			<td>{{mod.descr}}</td>
-		</tr>		
-		{% endfor %}
-		<tr> 
-			<td> {} </td>
-			<td> {} </td>
-		</tr>		
 		</table>
 	</div>
 {% endblock %}

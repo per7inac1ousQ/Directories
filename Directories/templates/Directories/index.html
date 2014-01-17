@@ -15,7 +15,17 @@ function get_action(submit){
 	</script>
 {% endblock %}
 {% block content%} 
-	<div id="content" align="center">                
+	<div id="content" align="center">              
+		<!-- edw 8a mpei to message me ta stoixeia pou proste8ikan kata to modelUpdate view. 8Elei kapoies allages sto CSS kai to alignment! -->
+		{% if messages %}
+		<div class="messages" align="left">
+    		{% for message in messages %}
+    		<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}!</li>
+    		{% endfor %}
+		</div>
+		<br />
+		{% endif %}	
+		{0{form.as_p}}  
     	<h2> Welcome! this is Directories app! </h2> 
                 <!-- alternative URL action = "{0% url 'Directories:list_models' 5 %}" --- needs this: {0% load url from future %} before the form initialisation
                 <form action="list" method="post">{% csrf_token %0} -->
