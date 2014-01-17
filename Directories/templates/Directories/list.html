@@ -16,7 +16,7 @@
 		{% endfor %}
 		</tr>	
 		<tr>
-			{% for f_name in field_names %}				
+			{% for f_name in field_names %}			
 				<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_data model_name f_name %} </td>
 			{% endfor %}
 		</tr>	

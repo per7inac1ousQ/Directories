@@ -17,14 +17,7 @@
 	Mporei na ginei episis kai me .append() se lista -->
 	<!-- action = "{0% url 'Directories:list_models'%}"-->
 	<form action="" method="post"> {% csrf_token %}
-	{% if messages %}
-		<ul class="messages">
-    		{% for message in messages %}
-    		<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    		{% endfor %}
-		</ul>
-	{% endif %}	
-	{{ form.update.errors }}
+	{0{ form.non_field_errors }}<br />
 	{% for f_name in field_names %}	
 		{% if not forloop.first %}		
 			{{f_name}}:	<input id="edit-{{f_name}}" type="text" name={{f_name}} /><br />

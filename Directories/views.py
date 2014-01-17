@@ -158,11 +158,11 @@ def modelUpdate(request):
 			if form.is_valid(): # All validation rules pass
 				print "WOOOHOOOO form is valid!"
 				print "form sent is: ", form
-				#row = form.save() #saves into database
+				#row = form.save() #saves into database !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				form = dbForm()
 				#send a message to inform users that form submission was a success
 				messages.success(request, 'Model details updated.')
-				#print "get!!!", request.GET['model_classes_field']
-				return render(request, 'Directories/index.html', {'model_classes_field': request.GET['model_classes_field']})
+				return render(request, 'Directories/index.html', {'form': form})
 			else:
 				print "form errors: ", form.errors
 				return HttpResponse('ERROR -- Return to form submission')
@@ -171,7 +171,7 @@ def modelUpdate(request):
 		print "no form submission: ", form.errors
 	
 
-#Xreiazzeeetaaaiiiiiiiiii??????????????????????????
+#Do i need iiiiittttttt??????????????????????????
 def create(request):
 	dir_list = Department.objects.all()
 	return render(request, 'Directories/create.html', {'dir_list': dir_list})

@@ -4,6 +4,9 @@
 	
 	{% for data in data_list %}
 	<tr>
+			{% if forloop.counter0 %}
+				<td>check</td>
+			{% endif %}
 			<td> {{data}} </td>	
 	</tr>
 	{% endfor %}

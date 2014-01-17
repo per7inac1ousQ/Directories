@@ -25,32 +25,13 @@ function get_action(submit){
 		</div>
 		<br />
 		{% endif %}	
-		{0{form.as_p}}  
+		 
     	<h2> Welcome! this is Directories app! </h2> 
-                <!-- alternative URL action = "{0% url 'Directories:list_models' 5 %}" --- needs this: {0% load url from future %} before the form initialisation
-                <form action="list" method="post">{% csrf_token %0} -->
-				{% load url from future %}
-				<form action="{% url 'Directories:list_models'%}" method="get">	{% csrf_token %}
-<!-- onsubmit="return get_action();" -->
-{{ form.model_classes_field.errors }}
-<label for="id_model_classes_field">Choose from one of the existing tables:</label> 
-                    <select id="id_model_classes_field" name="model_classes_field"> 		
-					{% for choice in form.fields.model_classes_field.choices %}
-                           <option value="{{choice.0}}">{{choice.0}}</option> 
-
-                        <!-- Workssss with ChoiceField (in a way)     
-                        {0% for choice in form.fields.model_classes_field.choices %} 
-                                        <!--option name="m_id" value="{{ choice.model_table }}">{{choice.model_id}}: {{choice.model_name}}</option 
-
----- displays but not works... it is a ModelChoiceField
-{0% for choice in form.fields.model_classes_field.queryset %}
-                           <option name="m_id" value="{0{ choice }}">{0{choice.model_id}}: {0{choice.model_name}}</option> --> 
-                        {% endfor %} 
-
-
-                        </select> <br /> 
-                        <input type="submit" value="List items" name="_change" onclick="get_action(this);"/>
-						<input type="submit" value="Edit" name="_add" onclick="get_action(this);" />
+                <!-- alternative URL action = "{0% url 'Directories:list_models' 5 %}" --- needs this: {0% load url from future %} before the form initialisation -->
+				<form action="" method="get">	{% csrf_token %}
+					{{form.as_p}} 
+					<input type="submit" value="List items" name="_change" onclick="get_action(this);"/>
+					<input type="submit" value="Edit" name="_add" onclick="get_action(this);" />
                 </form>
     </div>
     <div id="bottom">
