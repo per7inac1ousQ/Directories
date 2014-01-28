@@ -1,4 +1,8 @@
 import django.conf.global_settings as DEFAULT_SETTINGS
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+import os
+
 """
 Django settings for telDirMgmt project.
 
@@ -9,8 +13,32 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
+# Baseline LDAP configuration without groups.
+AUTH_LDAP_SERVER_URI = "ldap://ldap.example.com"
+
+AUTH_LDAP_BIND_DN = "cn=django-agent,dc=example,dc=com"
+AUTH_LDAP_BIND_PASSWORD = "phlebotinum"
+AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=example,dc=com",
+    ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+# or perhaps:
+# AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=users,dc=example,dc=com"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+
+# Populate the Django user from the LDAP directory.
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail"
+}
+
+AUTH_LDAP_PROFILE_ATTR_MAP = {
+    "employee_number": "employeeNumber"
+}
+
+# This is the default, but I like to be explicit.
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
@@ -64,6 +92,10 @@ ROOT_URLCONF = 'telDirMgmt.urls'
 
 WSGI_APPLICATION = 'telDirMgmt.wsgi.application'
 
+AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases

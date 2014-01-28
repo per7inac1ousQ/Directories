@@ -3,23 +3,83 @@
 {% block title %} Directories App {% endblock %}
 
 {% block content%} 
+	{% load url from future %}
 	<div id="content" align="center">
 		<h2> Welcome! this is Directories app! </h2> 
 		<br /> {{field_list}}
 		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the output -->		
 		<table class="data-listing">
-		<!-- TEST 2 implementaion ---------------->
-		<!---------- WORKS!! ----???------>	
+		<thead>
 		<tr>
 		{% for field in fields %}
-			<th class="column-{{ field.verbose_name|slugify }}">{{ field.verbose_name|slugify }}</th>
+			{% if not forloop.first %}
+				<th class="column-{{ field.verbose_name|slugify }}">{{ field.verbose_name|slugify }}</th>
+			{% endif %}
 		{% endfor %}
 		</tr>	
-		<tr>
-			{% for f_name in field_names %}			
-				<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_data model_name f_name %} </td>
+		</thead>
+		<!-- use this if you want to slice the ID column 
+		{0% with fields|slice:"1:" as cached_fields %} -->
+		<tbody>
+			
+			 
+			{% for mod in model_list %}
+				<tr>
+					{% for field in fields %}
+						<td>{0% get_value_from_key mod.fields field %}</td>
+					{% endfor %}
+				</tr>
 			{% endfor %}
-		</tr>	
+			
+			
+		</tbody>
+		<tbody>
+			
+			<tr> 
+				{% for row in rows %}
+					<td>{{row}}</td>
+				{% endfor %}
+			</tr>
+			
+		</tbody>
+		<tbody>
+<!--------DJANGO TABLES????????????? JUST SAYINGGGGG!!!-------------> <!-- use .count for counter??? -->
+		{0% for field in field_names %}	
+			{0% for mod in model_name|field_values:field %}
+				<tr>		
+					{% for field in field_names %}
+							<td>{{ model_name|field_values:field }}</td>		
+					{% endfor %} 
+				</tr>
+			{0% endfor %}		
+		{0% endfor %} 
+		</tbody>
+		</table>
+		<!----------- WITH INCLUSION TAGG. WORKSS! in a way... ------------------------->
+		<table class="data-listing">
+		<thead>
+		{% with fields|slice:"1:" as sliced_fields %}
+			<tr>
+			{% for field in sliced_fields %}
+					<th class="column-{{ field.verbose_name|slugify }}">{{ field.verbose_name|slugify }}</th>
+			{% endfor %}
+			</tr>
+		{% endwith %}
+		</thead>
+		<tbody>
+		{% with field_names|slice:"1:" as sliced_fnames %}
+			<tr>
+			{% for f_name in sliced_fnames %}y
+				{% if f_name = sliced_fnames.0 %}
+					<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_edit model_name f_name %} </a></td>
+				{% else %}
+					<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_data model_name f_name %} </td>	
+				{% endif %}
+			{% endfor %}
+			</tr>	
+		{% endwith %}
+		</tbody>
+		
 		</table>
 	</div>
 {% endblock %}

@@ -1,18 +1,20 @@
-html, body { margin:0;
+html, body { background-color:#d3ffce; 
+			margin:0;
 			padding:0;
 			height:100%;
 			}
 
-body { background-color:#d3ffce; }
-#top {background-color:black; 
-	  margin:0;}
-ul.navBar { background-color:#ffffff;
-			list-style-type:none;
-			margin:0px;
+ul.navBar { background-color:#89B9D5;
+			position: fixed;
+			margin:0;
+			padding:5px 5px;
+			top: 0;
+			right: 0;
 			width: 100%;
-			padding:10px 20px 10px 5px; 
-			overflow:hidden;
+			z-index: 1000;
+			list-style-type:none;
 			white-space:nowrap;
+			overflow:hidden;	
 }
 
 li {  
@@ -20,21 +22,24 @@ li {
 	width: 33%;
 } 
 
+li a {
+			color:#fff;
+}
+
 a:link {
 	display:block;
-	/*width:80px;*/
 	text-align:center;
-	padding:1px;
 	text-decoration:none;
 	text-transform:uppercase;
+	color:#fff;
 }
+
 
 #content {	background-color:#fff;
 			display:block;			
 			border: 2px solid grey;
 			position:relative;
-			margin:20px 30px;
-			height:auto;
+			margin:40px 30px;
 			padding:0px 20px 20px 20px;
 			text-shadow:3px;
 			overflow:auto;
