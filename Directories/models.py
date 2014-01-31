@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: iso-8859-7 -*-
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
@@ -91,12 +93,7 @@ class Instructors(models.Model):
         verbose_name= 'Instructors'
     def __unicode__(self):
         return u'%s' % self.subject
-######
-def __init__(self, *args, **kwargs):
-    super(CircuitForm, self).__init__(*args, **kwargs)
-    for f_name in self.fields:
-        self.fields[f_name].required = False
-#######
+
 class Katefth(models.Model):
     kat_id = models.AutoField(primary_key=True, verbose_name="Id")
     perigrafi_kat = models.CharField(max_length=100, verbose_name="perigrafi katefthnsh")
@@ -142,10 +139,7 @@ class KykloiExamina(models.Model):
     comments = models.TextField(blank=True, verbose_name="comments")
     class Meta:
         db_table = 'kykloiExamina'
-        verbose_name= 'Kykloi examina'
-    def __unicode__(self):
-        return self.notes
-	verbose_name= 'Kykloi examina'
+        verbose_name= 'Kykloi_examina'
 
 class ModuleKykloi(models.Model):
     module_id = models.IntegerField(primary_key=True, default='0', verbose_name="module_id")

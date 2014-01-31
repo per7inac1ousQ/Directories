@@ -8,53 +8,7 @@
 		<h2> Welcome! this is Directories app! </h2> 
 		<br /> {{field_list}}
 		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the output -->		
-		<table class="data-listing">
-		<thead>
-		<tr>
-		{% for field in fields %}
-			{% if not forloop.first %}
-				<th class="column-{{ field.verbose_name|slugify }}">{{ field.verbose_name|slugify }}</th>
-			{% endif %}
-		{% endfor %}
-		</tr>	
-		</thead>
-		<!-- use this if you want to slice the ID column 
-		{0% with fields|slice:"1:" as cached_fields %} -->
-		<tbody>
-			
-			 
-			{% for mod in model_list %}
-				<tr>
-					{% for field in fields %}
-						<td>{0% get_value_from_key mod.fields field %}</td>
-					{% endfor %}
-				</tr>
-			{% endfor %}
-			
-			
-		</tbody>
-		<tbody>
-			
-			<tr> 
-				{% for row in rows %}
-					<td>{{row}}</td>
-				{% endfor %}
-			</tr>
-			
-		</tbody>
-		<tbody>
-<!--------DJANGO TABLES????????????? JUST SAYINGGGGG!!!-------------> <!-- use .count for counter??? -->
-		{0% for field in field_names %}	
-			{0% for mod in model_name|field_values:field %}
-				<tr>		
-					{% for field in field_names %}
-							<td>{{ model_name|field_values:field }}</td>		
-					{% endfor %} 
-				</tr>
-			{0% endfor %}		
-		{0% endfor %} 
-		</tbody>
-		</table>
+<!-- old ones on github -->
 		<!----------- WITH INCLUSION TAGG. WORKSS! in a way... ------------------------->
 		<table class="data-listing">
 		<thead>
@@ -66,20 +20,26 @@
 			</tr>
 		{% endwith %}
 		</thead>
+		<form action="" method="post">	{% csrf_token %}
 		<tbody>
 		{% with field_names|slice:"1:" as sliced_fnames %}
+			
 			<tr>
-			{% for f_name in sliced_fnames %}y
+			{% for f_name in sliced_fnames %}
 				{% if f_name = sliced_fnames.0 %}
-					<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_edit model_name f_name %} </a></td>
+					<td>
+							{{form.as_p}} <!-- maybe manual edit it so as to make use of field_edit template tag????? -->
+					</td>
+					<!--td class="column-{0{ f_name|slugify }}" name="column-{0{ f_name|slugify }}"> {0% field_edit model_name f_name %} </a></td-->
 				{% else %}
 					<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}"> {% field_data model_name f_name %} </td>	
 				{% endif %}
 			{% endfor %}
-			</tr>	
+			
 		{% endwith %}
 		</tbody>
-		
 		</table>
+		<input type="submit" value="Delete selected items" name="_selected" />
+		</form>
 	</div>
 {% endblock %}

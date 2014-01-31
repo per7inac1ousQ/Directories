@@ -2,6 +2,7 @@ from django import template
 from django.db import models
 from django.db.models import get_models, get_app, get_model
 from Directories.models import Department, Attributes
+from django.template import loader, RequestContext
 register = template.Library()
 
 data_list = []
@@ -66,12 +67,25 @@ def field_data(model, field):
 	model_class = get_model('Directories', model)
 	fields_lst= list(model_class.objects.values_list(field, flat=True)) 		
 	return {'fields_lst':fields_lst}
-	
+'''
+@register.inclusion_tag('Directories/field_edit.html')
+def field_edit(model, field):	
+	if request.method == 'POST':
+		print "SLECTEDDDDDDDDDDDD SAYIN!"
+		print "YEAHHHH!"
+		#form_class = get_fields_dynamic (request.GET['model_classes_field'])
+		#form = form_class(request.POST)
+		sForm = selectForm(request.POST)
+		if sForm.is_valid(): # All validation rules pass
+			print "YEAHHHH!"
+		return render(request, 'Directories/index.html', {'form':form}) # form or sForm??
+'''
 @register.inclusion_tag('Directories/field_edit.html')
 def field_edit(model, field):
 	model_class = get_model('Directories', model)
 	fields_lst= list(model_class.objects.values_list(field, flat=True))
 	return {'fields_lst':fields_lst}
+
 '''
 @register.inclusion_tag('Directories/model_data.html')
 def field_data(model, field):

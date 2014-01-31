@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: iso-8859-7 -*-
 from django.conf.urls import patterns, url
 from Directories import views
 

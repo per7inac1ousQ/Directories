@@ -77,6 +77,7 @@ INSTALLED_APPS = (
 	'crispy_forms',
 	'crispy_forms_foundation', #use this to implement specific template layout for use with the Foundation responsive web-design framework
 	'django_tables2',
+	'south',
 )
 
 MIDDLEWARE_CLASSES = (
