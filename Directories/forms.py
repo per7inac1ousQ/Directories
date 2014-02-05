@@ -37,55 +37,20 @@ def get_dynamic_form(c_model):
 class selectForm(forms.Form):
 	select_fields = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=fields())
 	
-##################################### dynamic try
-class selectForm2(forms.Form):
-    def __init__(self, choices, *args, **kwargs):
-        super(selectForm, self).__init__(*args, **kwargs)
-        self.fields["select_fields"] = forms.ChoiceField(choices=choices)
-##################################        
-
 def get_fields_dynamic(c_model):
 	model_class = get_model('Directories', c_model)	
 	class selectForm(forms.ModelForm):
 	    class Meta:
 	        model = model_class
-	        fields = ['descr']
 		def __init__(self, *args, **kwargs):
-			super(selectForm, self).__init__(*args, **kwargs)
-			self.fields["descr"].widget = forms.CheckboxSelectMultiple()
-			form.fields["descr"].queryset = model_class.objects.all()
+			super(selectForm, self).__init__(*args, **kwargs) # Call to ModelForm constructor
+			#select_fields = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=fields())
+			self.fields["descr_en"].widget = forms.CheckboxSelectMultiple()
+			self.fields["descr_en"].choices = fields()
 	return selectForm  
 
-############ dokimase na kaneis render tin form sto template opws ekanes me to create.html kai oxi apla {{form.as_p}}
-##### ara 8a valeis p.x. "for val in attributes.objects.value_list('descr'): {{val}}" i kati tetoio tespa
+
 '''
-# CHECK THESE EXAMPLES
-class NewForm(forms.Form):
-    super(NewForm, self).__init__(*args, **kwargs)
-    def __init__(self, choices, *args, **kwargs):
-        super(NewForm, self).__init__(*args, **kwargs)
-        self.fields["choices"] = forms.ChoiceField(choices=choices)
-        
-
-class MyForm(BaseForm):
-    afield = forms.ChoiceField(choices=INITIAL_CHOICES)
-	def __init__(self, *args, **kwargs):
-        super(MyForm, self).__init__(*args, **kwargs)
-        self.fields['afield'].choices = my_computed_choices
-'''
-
-#works with checkboxes but models NOT fields
-class selectForm2(forms.Form): #widget=forms.CheckboxSelectMultiple, valto stin paren8esi molis sou doulepsi me dropdown list box
-	select_fields = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=models())
-
-'''	
-class selectForm(forms.Form):
-	select_fields = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=models())
-	def __init__ (self, *args, **kwargs):
-        brand = kwargs.pop("brand")
-        super(IngredientForm, self).__init__(*args, **kwargs)
-        self.fields["diets"].widget = forms.widgets.CheckboxSelectMultiple()
-
 # old models() method that iterates through all of the models in the database and 
 # returns their name and position
 def models():

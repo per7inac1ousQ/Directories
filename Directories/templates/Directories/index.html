@@ -2,14 +2,15 @@
 {% block title %} Directories App {% endblock %}
 <body>
 {% block jquery %} 
+{% load url from future %}
 	<script> 
 function get_action(submit){
 	var theForm = submit.form;
 	if (submit.name=="_change") {
-		theForm.action = "list"  
+		theForm.action = "{% url 'Directories:list_models' %}"  
 	}
 	else {
-		theForm.action = "edit"       
+		theForm.action = "{% url 'Directories:update_directories'%}"       
 	}
 }
 	</script>

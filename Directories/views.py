@@ -30,18 +30,10 @@ field_list = []
 field_models = []
 k = []
 c = []
-
-#### des pws mporw na to kanw dynamic wste na kanw ta choices edw kai na ta emfanisw sto selectForm(my_choices, request.POST) 
-#pio katw. Des edw: http://stackoverflow.com/questions/11588418/using-dynamic-choice-field-in-django?answertab=active#tab-top
-def fields(model, field): 
-	m_values = Attributes.objects.values_list('descr_en', flat=True)
-	for val in m_values:
-		field_classes.append((val, val))
-	return field_classes
+instance_list = []
 
 def index(request): #for two submit buttons:
 	print "start"
-	print "fields", fields()
 	form = dbForm()
 	if request.method == 'GET':	
 		print "get!!!"
@@ -52,10 +44,6 @@ def index(request): #for two submit buttons:
 				print "bound form, get data"
 				model_classes_field = cform.cleaned_data['model_classes_field']		
 				return render(request, 'Directories/list.html', {'model_classes_field':model_classes_field})
-				''''model_class':model_class, 'model_name': model_name, 
-				'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
-				'y':y, 'c':c, 'k':k, 'model_name':model_name, 'rows': rows, 'result_list':result_list, 'f_count':f_count, 
-				'chk_ls':chk_ls, 'sForm':sForm})'''
 			else:
 				return HttpResponse('ERROR in GET -- Return to form submission')
 		elif '_add' in request.GET:
@@ -79,7 +67,7 @@ def index(request): #for two submit buttons:
 '''
 def dlist(request):
 	print "list page"
-	m_tb_name = request.GET['model_classes_field']
+	m_tb_name = request.GET['model_classes_field'] # get the model table name
 	model_class = get_model('Directories', m_tb_name)
 	model_name = model_class._meta.db_table
 	model_list = list(model_class.objects.all()) 
@@ -91,24 +79,45 @@ def dlist(request):
 	#form = form_class(request.POST)
 	#z = remove_field_list(model_class) ###################################!!NOTE: removes field_list. you may need 
 	if request.method == 'POST':
-		print "SLECTEDDDDDDDDDDDD SAYIN!"
-		form = selectForm(request.POST)
-		#form_class = get_fields_dynamic(m_tb_name, field_list[1])
-		#form = form_class(request.POST)
-		#form.fields[field_list[1]].queryset = model_class.objects.filter(user=request.user)
-		if form.is_valid(): # All validation rules pass
-			print "FORM VALID!"
-			delete_items = form.cleaned_data['select_fields']
-			for item in delete_items:
-				print "items: ", item
-				instance = Attributes.objects.get(descr_en=item)
-				print "instance", instance
-			messages.success(request, 'Selected fields deleted')
-			#prepei na kanei allou redirect oxi sto index gt ginetai axtarmas afou kanei xrisi tou selectForm oxi tou dbForms
-			return render(request, 'Directories/index.html')
-		else:
-			return HttpResponse('ERROR in POST -- Return to form submission')
+		if "_selected" in request.POST:
+			print "SLECTEDDDDDDDDDDDD SAYIN!"
+			form = selectForm(request.POST)
+			#form.fields[field_list[1]].queryset = model_class.objects.filter(user=request.user)
+			if form.is_valid(): # All validation rules pass
+				print "FORM VALID!"
+		#### Below i have a possible approach to my problem on how to get a specific Attributes row using user submitted form data
+		#### Attributes.objects.get(name=product_form.cleaned_data['select_fields']) 
+				delete_items = form.cleaned_data['select_fields']
+				for item in delete_items:
+					print "items: ", item
+					instance = model_class.objects.get(**{field_list[2]:item}) # default returns the model's id if called i.e. "print instance"
+		# to display all attributes u can use instance.attrs.all() found in eav-django app
+					print "instance", instance 
+					instance.delete() #comment to stop delete
+				messages.success(request, 'Selected fields deleted')
+				#prepei na kanei allou redirect oxi sto index gt ginetai axtarmas afou kanei xrisi tou selectForm oxi tou dbForms
+				return render(request, 'Directories/index.html')
+			else:
+				return HttpResponse('ERROR in POST -- Return to form submission')
+		elif "_edit" in request.POST:
+			print "You pressed update fields button in list template"
+			form = selectForm(request.POST)
+			if form.is_valid(): # All validation rules pass
+				print "selectForm VALID!"
+				delete_items = form.cleaned_data['select_fields']
+				for item in delete_items:
+					print "item: ", item
+					instance = model_class.objects.get(**{field_list[2]:item}) # default returns the model's id if called i.e. "print instance"
+		# to display all attributes u can use instance.attrs.all() found in eav-django app
+					print "instance", instance 		
+					instance_list.append(instance)
+				messages.success(request, 'Selected fields updated')
+				#prepei na kanei allou redirect oxi sto index gt ginetai axtarmas afou kanei xrisi tou selectForm oxi tou dbForms
+				return render(request, 'Directories/create.html', {"instance_list": instance_list, "m_tb_name": m_tb_name})
+			else:
+				return HttpResponse('ERROR in POST -- Return to form submission')
 	else:
+		#form = form_class()
 		form = selectForm()
 		print "no POST - form: ", form.errors
 		print "unbound form"
@@ -121,20 +130,34 @@ def dlist(request):
 '''
 def modelUpdate(request):	
 	print "Edit page"
-	if request.method == 'GET':
+	if 'model_classes_field' in request.GET:
 		m_tb_name = request.GET['model_classes_field']
+		print 'model_classes_field', m_tb_name
 		model_class = get_model('Directories', m_tb_name)
 		model_name = model_class.__name__
 		field_names = model_class._meta.get_all_field_names()			
-	elif request.method == 'POST': 
-		if 'update' in request.POST: # If the form has been submitted...
-			print "YEAHHHH!"
-			form_class = get_dynamic_form(m_tb_name)
-			form = form_class(request.POST)			
+	if request.method == 'POST': 
+		#if '_update' in request.POST: # If the form has been submitted...
+		print "m_tb_name is: ", m_tb_name
+		form_class = get_dynamic_form(m_tb_name)
+		form = form_class(request.POST)	
+		if 'select_fields' in request.POST:
+			print "One step closer to delete", m_tb_name
+			updated_item = request.POST.get('select_fields')
+			print "item: ", updated_item
+			print "instance list: ", form.instance
+			if form.is_valid(): # All validation rules pass
+				print "form valid! now start updating fields!" 
+				return HttpResponse('One step closer to updating your fields')
+			else:
+				print "form errors: ", form.errors
+				return HttpResponse('ERROR -- Return to form submission')
+		else:
+			print "YEAHHHH!"			
 			if form.is_valid(): # All validation rules pass
 				print "WOOOHOOOO form is valid!" 
-				# set commit=True to save into database"
-				row = form.save(commit=False) 
+				# set commit=False to prevent saving into database"
+				row = form.save() 
 				form = dbForm()
 				#send a message to inform users that form submission was a success
 				messages.success(request, 'Model details updated.')
@@ -142,11 +165,7 @@ def modelUpdate(request):
 			else:
 				print "form errors: ", form.errors
 				return HttpResponse('ERROR -- Return to form submission')
-		elif '_selected' in request.POST:
-			print "One step closer to delete"
-			delete_items = request.POST['select_fields']
-			print "items", delete_items
-			return HttpResponse('One step closer to delete')
+			
 	else:
 		form = dbForm() # An unbound form
 		print "no form submission: ", form.errors

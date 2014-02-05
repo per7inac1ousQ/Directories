@@ -1,15 +1,28 @@
 {% extends "Directories/base.html" %}
 {% load dir_extras %} 
 {% block title %} Directories App {% endblock %}
-
+<body>
+{% block jquery %} 
+{% load url from future %}
+	<script> 
+function get_action(submit){
+	var theForm = submit.form;
+	if (submit.name=="_selected") {
+		theForm.action = "{% url 'Directories:index'%}"  
+	}
+	else {
+		theForm.action = "{% url 'Directories:update_directories'%}"       
+	}
+}
+	</script>
+{% endblock %}
 {% block content%} 
 	{% load url from future %}
 	<div id="content" align="center">
-		<h2> Welcome! this is Directories app! </h2> 
-		<br /> {{field_list}}
+		<h2> List of Directories! </h2> 
+		<br />
 		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the output -->		
 <!-- old ones on github -->
-		<!----------- WITH INCLUSION TAGG. WORKSS! in a way... ------------------------->
 		<table class="data-listing">
 		<thead>
 		{% with fields|slice:"1:" as sliced_fields %}
@@ -22,8 +35,7 @@
 		</thead>
 		<form action="" method="post">	{% csrf_token %}
 		<tbody>
-		{% with field_names|slice:"1:" as sliced_fnames %}
-			
+		{% with field_names|slice:"1:" as sliced_fnames %}		
 			<tr>
 			{% for f_name in sliced_fnames %}
 				{% if f_name = sliced_fnames.0 %}
@@ -38,8 +50,10 @@
 			
 		{% endwith %}
 		</tbody>
-		</table>
+		</table> <br />
 		<input type="submit" value="Delete selected items" name="_selected" />
+		<input type="submit" value="Update selected items" name="_edit" />
 		</form>
 	</div>
 {% endblock %}
+</body>
