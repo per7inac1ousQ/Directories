@@ -1,4 +1,10 @@
 {% load staticfiles %}
+{% load bootstrap3 %}
+
+{# Delete the '0' to Load CSS and JavaScript #}
+{0% bootstrap_css %}
+{0% bootstrap_javascript %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,8 +20,8 @@
 	{% load url from future %}
 		<div id="top">
 				<ul class="navBar">
-					<li><a href="{% url 'Directories:index'%}"> Αρχή </a></li>
-					<li><a href="http://www.uom.gr"> Panepistimio Makedonias </a></li>
+					<li><a href="{% url 'Directories:index'%}"> ΑΡΧΗ </a></li>
+					<li><a href="http://www.uom.gr"> Πανεπιστήμιο Μακεδονίας </a></li>
 					<li><a href="about.html"> About page </a></li>
 				</ul>
 		</div>

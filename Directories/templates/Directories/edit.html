@@ -1,0 +1,26 @@
+{% extends "Directories/base.html" %}
+{% load bootstrap3 %}
+{% load url from future %}
+{% block content%} 
+	<div id="content" align="center">
+		<h3> Update entry</h3> 
+		<br />
+		{{m_tb_name}}
+		{% if instance_list %}
+			{% for instance in instance_list %}
+				{{instance}}
+			{% endfor %}
+		{% endif %}
+		<form action="{% url 'Directories:list_models' %}" method="post"> {% csrf_token %}
+		{% for f_name in field_names %}	
+			{% if not forloop.first %}		
+				{% for instance in instance_list %}
+					{{f_name}}:	<input id="edit-{{f_name}}" value="{{instance}}" type="text" name={{f_name}} /><br />
+				{% endfor %}
+			{% endif %}
+		{% endfor %}<br />
+		<input type="submit" name="_alter" value="Update" />
+		<input type="reset" name="Clear" value="Clear" />
+		</form>	
+		</div>
+{% endblock %}

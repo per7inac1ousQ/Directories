@@ -1,33 +1,28 @@
 {% extends "Directories/base_create.html" %}
-
+{% load bootstrap3 %}
+{% bootstrap_messages %}
 {% block title %} Directories App {% endblock %}
+{% load url from future %}
 {% block content%} 
-	<h3> Insert a new entry to {{model_name}} table </h3> 
-	<br />
-	{{formset.management_form}}
-	{0% for form in formset %}
-	{{form}}
-	{0% endfor %}
-	<br />
-	{0% for f_name in field_names %}
-		{0{ f_name }}
-	{0% endfor %}<br />
-	{{m_tb_name}}
-	{% if instance_list %}
-		{% for instance in instance_list %}
-			{{instance}}
-		{% endfor %}
-	{% endif %}
-	<!-- action = "{0% url 'Directories:list_models'%}"-->
-	<form action="" method="post"> {% csrf_token %}
-	{0{ form.non_field_errors }}<br />
-	{% for f_name in field_names %}	
-		{% if not forloop.first %}		
-			{{f_name}}:	<input id="edit-{{f_name}}" type="text" name={{f_name}} /><br />
+	<div id="content" align="center">
+		<h3> Insert a new entry to {{model_name}} table </h3> 
+		<br />
+		{{m_tb_name}}
+		{% if instance_list %}
+			{% for instance in instance_list %}
+				{{instance}}
+			{% endfor %}
 		{% endif %}
-	{% endfor %}<br />
-	<input type="submit" name="_update" value="Update" />
-	<input type="reset" name="Clear" value="Clear" />
-	</form>	
-
+		<!-- action = "{0% url 'Directories:list_models'%}"-->
+		<form action="{% url 'Directories:index' %}" method="post"> {% csrf_token %}
+		{0{ form.non_field_errors }}<br />
+		{% for f_name in field_names %}	
+			{% if not forloop.first %}		
+				{{f_name}}:	<input id="edit-{{f_name}}" type="text" name={{f_name}} /><br />
+			{% endif %}
+		{% endfor %}<br />
+		<input type="submit" name="_update" value="Update" />
+		<input type="reset" name="Clear" value="Clear" />
+		</form>	
+	</div>
 {% endblock %}

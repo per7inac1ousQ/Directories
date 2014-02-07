@@ -96,25 +96,19 @@ class Instructors(models.Model):
 
 class Katefth(models.Model):
     kat_id = models.AutoField(primary_key=True, verbose_name="Id")
-    perigrafi_kat = models.CharField(max_length=100, verbose_name="perigrafi katefthnsh")
-    perigrafi_kat_en = models.CharField(max_length=100, verbose_name="perigrafi katefthnsh english")
+    perigrafi_kat = models.CharField(blank=True, max_length=100, verbose_name="perigrafi katefthnsh")
+    perigrafi_kat_en = models.CharField(blank=True, max_length=100, verbose_name="perigrafi katefthnsh english")
     class Meta:
         db_table = 'katefth'
         verbose_name= 'Katefthnsh'
-    def __unicode__(self):
-        return self.perigrafi_kat
 
 class KatefthKykloi(models.Model):
     kat_id = models.IntegerField(primary_key=True, verbose_name="Id katefthnsh")
     kyklos_id = models.IntegerField(verbose_name="kykloi id")
     class Meta:
-        db_table = 'katefthKykloi'
+        db_table = 'katefth_kykloi'
         unique_together = ("kat_id", "kyklos_id")
         verbose_name= 'Katefthnsh kykloi'
-    def __unicode__(self):
-        return self.kat_id
-	unique_together = ("kat_id", "kyklos_id")
-	verbose_name= 'Katefthnsh kykloi'
 
 class Kykloi(models.Model):
     kyklos_id = models.AutoField(primary_key=True, verbose_name="Id")

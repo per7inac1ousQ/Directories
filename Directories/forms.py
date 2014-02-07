@@ -34,8 +34,18 @@ def get_dynamic_form(c_model):
 	        model = model_class
 	return ObjForm
 
-class selectForm(forms.Form):
+class selectForm2(forms.Form):
 	select_fields = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=fields())
+	
+class selectForm(forms.Form):
+	#select_fields = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=fields())
+	def __init__(self, *args, **kwargs):
+		choices = kwargs.pop('field_choices')
+		super(selectForm, self).__init__(*args, **kwargs) # Call to ModelForm constructor
+		self.fields["select_fields"] = forms.ChoiceField(choices=choices)
+		#select_fields = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=fields())
+		#self.fields["select_fields"].widget = forms.CheckboxSelectMultiple()
+		#self.fields["my_field"] = forms.ChoiceField(choices=choices)   exampleeeee
 	
 def get_fields_dynamic(c_model):
 	model_class = get_model('Directories', c_model)	

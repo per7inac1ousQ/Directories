@@ -78,6 +78,8 @@ INSTALLED_APPS = (
 	'crispy_forms_foundation', #use this to implement specific template layout for use with the Foundation responsive web-design framework
 	'django_tables2',
 	'south',
+	'bootstrap3', #twitter bootstrap app for mobile development
+	'django_filters', # use it to create filters e.x. search function (Maybe use it to find and delete items as well)
 )
 
 MIDDLEWARE_CLASSES = (
