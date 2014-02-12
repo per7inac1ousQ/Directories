@@ -1,5 +1,6 @@
 import datetime
 import itertools
+import collections
 from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic
 from Directories.models import Department, Attributes, Employees, Instructors, Katefth, KatefthKykloi, Kykloi, KykloiExamina, ModuleKykloi, Modules, ModulesTutors, PubInstr, PubTypes, Publications, Ranks, Service, Users, Works
 from django import forms
@@ -10,7 +11,7 @@ from django.views.generic import TemplateView,ListView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.template import loader, RequestContext
 from django.db import models
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template
 from django.core.paginator import Paginator
 from django.http import Http404
@@ -25,9 +26,10 @@ field_choices = []
 fields_dict = []
 field_list = []
 field_models = []
+field_values = {}
 k = []
 c = []
-instance_list = []
+update_list = []
 
 def fields(model, field):
 	m_values = model.objects.values_list(field, flat=True) # field = field_list[2]
@@ -47,7 +49,7 @@ def index(request): #for two submit buttons:
 			if form.is_valid(): # All validation rules pass
 				print "bound form, get data"
 				model_classes_field = form.cleaned_data['model_classes_field']	
-				return HttpResponseRedirect(reverse('list_models'))		
+				return HttpResponseRedirect(reverse('Directories:list_models'))		
 				#return render(request, 'Directories/list.html', {'model_classes_field':model_classes_field})
 			else:
 				return HttpResponse('ERROR in GET -- Return to form submission')
@@ -57,7 +59,7 @@ def index(request): #for two submit buttons:
 			if form.is_valid(): # All validation rules pass
 				print "bound form, get data"
 				model_classes_field = form.cleaned_data['model_classes_field']	
-				return HttpResponseRedirect(reverse('update_directories'))	
+				return HttpResponseRedirect(reverse('Directories:update_directories'))	
 				#return render(request, 'Directories/create.html', {'model_classes_field':model_classes_field})
 			else:
 				return HttpResponse('ERROR in GET -- Return to form submission')
@@ -106,7 +108,7 @@ def dlist(request):
 					instance.delete() #comment to stop delete
 				messages.success(request, 'Selected fields deleted')
 				#return HttpResponseRedirect('/Directories/') 
-				return HttpResponseRedirect(reverse('index'))
+				return HttpResponseRedirect(reverse('Directories:index'))
 			else:
 				return HttpResponse('ERROR in POST -- Return to form submission')
 		elif "_edit" in request.POST:
@@ -119,13 +121,19 @@ def dlist(request):
 				for item in delete_items:
 					print "item: ", item
 					instance = model_class.objects.get(**{field_list[2]:item}) # default returns the model's id if called i.e. "print instance"
-		# to display all attributes u can use instance.attrs.all() found in eav-django app
-					instance_list.append(item)
-					print "instance", instance 		
-				messages.success(request, 'Selected fields updated')
-				#prepei na kanei allou redirect oxi sto index gt ginetai axtarmas afou kanei xrisi tou selectForm oxi tou dbForms
-				return HttpResponseRedirect(reverse('edit_models'))
-				#return render(request, 'Directories/edit.html', {"field_names": field_names, "instance_list": instance_list, "m_tb_name": m_tb_name})
+					update_list.append(item)
+					print "instance", instance
+				# insert fields and their values into a dictionary
+				for count in reversed(range(1, len(field_list))):
+					f_val = getattr(instance, field_list[count])
+					field_values[field_list[count]] = f_val
+					print "sooooo we have field_values: ", field_values
+					print count
+					print field_list[count], ":", f_val			
+#### to m_table to afinw etsi gia tin wra alla meta 8a to apo8ikeuw se session gia n diatireite metaksi selidwn. 
+				url = "%s?m_table=attributes" % reverse('Directories:edit_models')
+				return HttpResponseRedirect(url)
+				#return render(request, 'Directories/edit.html', {"field_names": field_names, "update_list": update_list, "m_tb_name": m_tb_name})
 			else:
 				return HttpResponse('ERROR in POST -- Return to form submission')
 	else:
@@ -140,25 +148,56 @@ def dlist(request):
 '''
 	View that updates a selected field 
 '''
+#### ti prepei na kanw gia to update:
+	### 1) ftiakse ena queryset pou 8a epistrefei to field row basi tou field pou dialeksame sto list template 
+	### p.x. t = Attributes.objects.get(descr="chosen_field")
+	### 2) xrisimopoise auto to queryset ('t') gia na allakseis tis times se ola ta fields... 
+	### dld t.descr = 'your_value', t.notes = 'your_value' ktl
+	### 3) kane t.save() gia na apo8ikeutoun oi allages!!! tooosssooooooooo APLA!
 def modelEdit(request):
-	print "hmmm... seems like u pressed edit!"
-	updated_item = request.POST.get('select_fields')
-	print "updated_item", updated_item
-	if request.method == 'POST':
-		if 'desc_en' in request.POST:
-			form_class = get_dynamic_form(m_tb_name)
-			form = form_class(request.POST)	
-			print "_alter pressed!"
-			if form.is_valid(): # All validation rules pass
-				print "form valid! now start updating fields!" 
-				return HttpResponse('One step closer to updating your fields')
-			else:
-				print "form errors: ", form.errors
-				return HttpResponse('ERROR -- Return to form submission')
+	print "list:", update_list
+	#create a global list with the instances to be updated. This will be called in the modelEdit view
+### gia to form 8elw apla na emfanisw ta fields kai dipla koutia pou 8a grafw ta names tous. Me to submit 8a stelnontai edw
+### kai xrisimopoiwntas form.cleaned_data[] 8a ta epeksergazomai (me queryset??) kai meta save()
+	mvar = request.GET.get('m_table')
+	model_class = get_model('Directories', mvar)
+	print "variable sent to edit is:", mvar
+	for item in update_list:
+		t = model_class.objects.get(**{field_list[2]:item})
+	print "instance: ", t
+	# Get the field values list from dlist as shown below and then show the values in the edit template, inside the textboxes
+	f_val_list = sorted(field_values.items()) #sort puts them in alphabetical order but you may need to change this for other models
+	print "field_values: ", f_val_list
+	print "field_values: ", field_values
+	form_class = get_dynamic_form(mvar)
+	if "_alter" in request.POST:
+		print "instance: ", t
+		print "alter presseedddd!"
+		#for item in update_list:
+			#t = model_class.objects.get(**{field_list[2]:item})
+		form = form_class(request.POST)#, instance=t)
+		if form.is_valid(): # All validation rules pass
+			print "instance: ", t
+			print "form valid! now start updating fields!" 
+			# use the values sent in the form to update the fields
+			for count in range(1, len(field_list)):
+				form_data = form.cleaned_data[field_list[count]]
+				setattr(t, field_list[count], form_data)
+				print "new field value is:", getattr(t, field_list[count])
+			print "instance: ", t
+			t.save()
+			#send a message to inform users that form submission was a success
+			messages.success(request, 'Selected fields updated')
+			return HttpResponseRedirect(reverse('Directories:index'))
 		else:
-			form = dbForm() 
-			print "something not working"
-	return render(request, 'Directories/edit.html')
+			print "form errors: ", form.errors
+			return HttpResponse('ERROR -- Return to form submission')
+	else:
+		for item in update_list:
+			t = model_class.objects.get(**{field_list[2]:item})
+		form = form_class(instance=t)
+		print "something not working or submit button not pressed"
+	return render(request, 'Directories/edit.html', {'form':form, 'field_list':field_list, 'f_val_list':f_val_list})
 	
 '''
 	View for adding a new row to a model dynamically.
@@ -172,7 +211,6 @@ def modelUpdate(request):
 		model_name = model_class.__name__
 		field_names = model_class._meta.get_all_field_names()			
 	if request.method == 'POST': 
-		#if '_update' in request.POST: # If the form has been submitted...
 		print "m_tb_name is: ", m_tb_name
 		form_class = get_dynamic_form(m_tb_name)
 		form = form_class(request.POST)	
@@ -183,15 +221,15 @@ def modelUpdate(request):
 			row = form.save() 
 			form = dbForm()
 			#send a message to inform users that form submission was a success
-			messages.success(request, 'Model details updated.')
-			#return HttpResponseRedirect('/Directories/') 
-			return HttpResponseRedirect(reverse('index',))
+			messages.success(request, 'New model data created!')
+			return HttpResponseRedirect(reverse('Directories:index'))
 		else:
 			print "form errors: ", form.errors
 			return HttpResponse('ERROR -- Return to form submission')
 		
 	else:
-		form = dbForm() # An unbound form
+		form_class = get_dynamic_form(m_tb_name)
+		form = form_class() # An unbound form
 		print "no form submission: ", form.errors
 	return render(request, 'Directories/create.html', {'model_name':model_name, 'field_names':field_names})
 
@@ -214,131 +252,3 @@ def get_model_fields(model):
 def get_field_data(model, field):
 	return model.objects.values_list(field, flat=True)
 	
-'''
-def index2(request): #for two submit buttons:
-	print "start"
-	form = dbForm()
-	print "form is: ", form
- 	return render(request, 'Directories/index.html', {'form':form})
-'''	
-		
-'''
-def dlist2(request):
-	print "list page"
-	#Here I handle the form data from the index view and create the list template that displays the model objects
-	if request.method == 'GET':	
-		form = dbForm(request.GET) # A form bound to the GET data
-		print "get!!!"
-		if form.is_valid(): # All validation rules pass
-			print "bound form, get data"
-			model_classes_field = form.cleaned_data['model_classes_field']
-			model_class = get_model('Directories', model_classes_field)
-			model_name = model_class._meta.db_table
-			model_list = list(model_class.objects.all()) 
-			fields = get_model_fields(model_class)
-			field_names = model_class._meta.get_all_field_names()
-			if not field_list:
-				z = create_field_list(model_class)
-				count = 0
-				for f_name in field_names:	
-					for mod in model_list:
-						j = getattr(mod, field_list[count])
-						#j = j.encode('ISO 8859-7')
-						#j = j.encode('windows-1253').decode('utf-8')
-						c.append(f_name)			
-						k.append(j)
-					count += 1
-			y = zip(c,k)
-			
-	# other try ###################################################
-			f_count = 0
-			result_list = []
-			for field in field_list:
-				fields_lst= list(model_class.objects.values_list(field, flat=True))
-				#for value in fields_lst:
-				result_list.append(fields_lst)
-			f_count += 1
-	# to list rows kanei miksi ta lists wste na vgainoun se morfi rows####################################
-			f_count = 0
-			rows = []
-			chk_ls = []
-			for mod in model_list:
-				chk_ls.append("<input type='checkbox' />")
-				for field in field_list:
-					fields_lst= list(model_class.objects.values_list(field, flat=True))
-					#for value in fields_lst:
-					rows.append(fields_lst[f_count])
-				f_count += 1
-			#z = remove_field_list(model_class) ###################################!!NOTE: removes field_list. you may need it
-			return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
-			'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 'y':y, 'c':c, 
-			'k':k, 'model_name':model_name, 'rows': rows, 'result_list':result_list, 'f_count':f_count, 'chk_ls':chk_ls,
-			'sForm':sForm})
-		else:
-			return HttpResponse('ERROR in GET -- Return to form submission')
-	# since i created my list template now I check the form 
-	elif request.method == 'POST':
-		print "SLECTEDDDDDDDDDDDD SAYIN!"
-		print "YEAHHHH!"
-		#form_class = get_fields_dynamic (request.GET['model_classes_field'])
-		#form = form_class(request.POST)
-		#sForm = selectForm(request.POST)
-		sForm = selectForm(request.POST)
-		if sForm.is_valid(): # All validation rules pass
-			print "FORM VALID!"
-			#form = dbForm() # form or sForm??
-			messages.success(request, 'Selected fields deleted')
-			return render(request, 'Directories/index.html', {'sForm':sForm}) # form or sForm??
-		else:
-			return HttpResponse('ERROR in POST -- Return to form submission')
-	else:
-		#sForm = selectForm()
-		form = dbForm()
-		print "no POST - form: ", form.errors
-		print "unbound form"
-	return render(request, 'Directories/list.html', {'form':form})
-'''
-
-'''
-def modelUpdate2(request):	
-	print "Edit page"
-	if request.method == 'GET': 
-		if 'model_classes_field' in request.GET: # If the form has been submitted...
-			print "get!!!", request.GET['model_classes_field']
-			#model_classes_field = request.POST['model_classes_field']
-			#model_class = get_model('Directories', model_classes_field)
-			form = dbForm(request.GET) # A form bound to the GET data
-			#form = get_dynamic_form(request.GET['model_classes_field'])
-			print "check data"
-			if form.is_valid(): # All validation rules pass
-				model_classes_field = form.cleaned_data['model_classes_field']
-				print "get data is: ", model_classes_field
-				model_class = get_model('Directories', model_classes_field)
-				#form = get_dynamic_form(model_classes_field)
-				#get model's name
-				model_name = model_class.__name__
-				field_names = model_class._meta.get_all_field_names()			
-				return render(request, 'Directories/create.html', {'model_name':model_name, 'field_names':field_names})
-			else:
-				print "form errors: ", form.errors
-				return render(request, 'Directories/index.html')
-	elif request.method == 'POST': 
-		if 'update' in request.POST: # If the form has been submitted...
-			print "YEAHHHH!"
-			form_class = get_dynamic_form(request.GET['model_classes_field'])
-			form = form_class(request.POST)			
-			if form.is_valid(): # All validation rules pass
-				print "WOOOHOOOO form is valid!" 
-				print "Uncomment line below to save to database"
-				row = form.save(commit=False) 
-				form = dbForm()
-				#send a message to inform users that form submission was a success
-				messages.success(request, 'Model details updated.')
-				return render(request, 'Directories/index.html', {'form': form}) 
-			else:
-				print "form errors: ", form.errors
-				return HttpResponse('ERROR -- Return to form submission')
-	else:
-		form = dbForm() # An unbound form
-		print "no form submission: ", form.errors
-'''

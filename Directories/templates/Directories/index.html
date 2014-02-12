@@ -19,7 +19,7 @@ function get_action(submit){
 {% endblock %}
 {% block content%} 
 	<div id="content" align="center">              
-		<!-- edw 8a mpei to message me ta stoixeia pou proste8ikan kata to modelUpdate view. 8Elei kapoies allages sto CSS kai to alignment! -->
+		<!-- CSS and alignment changes??? -->
 		{% if messages %}
 		<div class="messages" align="left">
     		{% for message in messages %}
@@ -30,9 +30,10 @@ function get_action(submit){
 		{% endif %}	
 		 
     	<h2> Welcome! this is Directories app! </h2> 
-                <!-- alternative URL action = "{0% url 'Directories:list_models' 5 %}" --- needs this: {0% load url from future %} before the form initialisation -->
 				<form action="" method="get">	{% csrf_token %}
 					{{form.as_p}} 
+					<!-- if you comment javascript onclick it does not work... -->
+					<!-- Try to find other way than javascript?? maybe not trustworthy?? -->
 					<input type="submit" value="List items" name="_change" onclick="get_action(this);"/>
 					<input type="submit" value="Create" name="_add" onclick="get_action(this);" />
                 </form>

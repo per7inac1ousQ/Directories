@@ -17,7 +17,6 @@ function get_action(submit){
 	</script>
 {% endblock %}
 {% block content%} 
-	{% load url from future %}
 	<div id="content" align="center">
 		<h2> List of Directories! </h2> 
 		<br />
@@ -51,8 +50,8 @@ function get_action(submit){
 		{% endwith %}
 		</tbody>
 		</table> <br />
-		<input type="submit" value="Delete selected items" name="_delete" onclick="get_action(this);"/>
-		<input type="submit" value="Update selected items" name="_edit" onclick="get_action(this);"/>
+		<input type="submit" value="Delete selected items" name="_delete" /> <!-- onclick="get_action(this);"/-->
+		<input type="submit" value="Update selected items" name="_edit" /> <!-- onclick="get_action(this);"/-->
 		</form>
 	</div>
 {% endblock %}
