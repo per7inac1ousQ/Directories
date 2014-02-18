@@ -15,9 +15,12 @@ def models():
 	return model_classes
 
 def fields():
-	m_values = Attributes.objects.values_list('descr_en', flat=True)
+	m_values = Attributes.objects.values_list('descr', flat=True)
+	#m_values = [value.encode("utf8") for value in model_list]
+	#print "fields() ", m_values
 	for val in m_values:
 		field_classes.append((val, val))
+	print "list: ", field_classes
 	return field_classes
 	
 class dbForm(forms.Form):

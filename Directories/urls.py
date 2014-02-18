@@ -5,6 +5,7 @@ from Directories import views
 
 urlpatterns = patterns('',
 	url(r'^$', views.index, name='index'),
+	url(r'^login$', views.login, name='login'),
 	#url(r'^new$', views.create, name='create_directories'),
 	url(r'^list$', views.dlist, name='list_models'),
 	url(r'^new$', views.modelUpdate, name='update_directories'),

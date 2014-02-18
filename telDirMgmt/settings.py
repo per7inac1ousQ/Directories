@@ -13,7 +13,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
-# Baseline LDAP configuration without groups.
+# Baseline LDAP configuration without groups. (ask yours from the LDAP supervisorrrr!!!!!!!!)
 AUTH_LDAP_SERVER_URI = "ldap://ldap.example.com"
 
 AUTH_LDAP_BIND_DN = "cn=django-agent,dc=example,dc=com"
@@ -111,9 +111,8 @@ DATABASES = {'default': {
 		'HOST': '195.251.213.90',
 		'PORT': '3306',
 		'OPTIONS': {
-                    'charset': 'latin1',
 					#'charset': 'windows-1253'
-					#'charset' : 'utf8',
+					'charset' : 'utf8',
                     'use_unicode': True, },#greek_general_ci
     }
 }

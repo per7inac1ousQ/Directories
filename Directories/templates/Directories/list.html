@@ -24,6 +24,12 @@ function get_action(submit){
 <!-- old ones on github -->
 		<table class="data-listing">
 		<thead>
+			
+			<!-- {0% for field in form %} #break a list of twenty models into two columns or something like that
+				{0% ifequal forloop.counter 11 %}</ul><ul>{0% endifequal %}
+				<li>{0{ field }}</li>
+				{0% endfor %}-->
+				
 		{% with fields|slice:"1:" as sliced_fields %}
 			<tr>
 			{% for field in sliced_fields %}

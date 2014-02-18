@@ -22,6 +22,7 @@ class Attributes(models.Model):
     class Meta:
         db_table = 'attributes'
         verbose_name= 'Attributes'
+        unique_together = (("descr", "descr_en"),)
     def __unicode__(self):
           return unicode(self.attr_id)
 
@@ -100,15 +101,15 @@ class Katefth(models.Model):
     perigrafi_kat_en = models.CharField(blank=True, max_length=100, verbose_name="perigrafi katefthnsh english")
     class Meta:
         db_table = 'katefth'
-        verbose_name= 'Katefthnsh'
-
+        verbose_name= 'Katefth' 
+             
 class KatefthKykloi(models.Model):
     kat_id = models.IntegerField(primary_key=True, verbose_name="Id katefthnsh")
     kyklos_id = models.IntegerField(verbose_name="kykloi id")
     class Meta:
         db_table = 'katefth_kykloi'
         unique_together = ("kat_id", "kyklos_id")
-        verbose_name= 'Katefthnsh kykloi'
+        verbose_name= 'KatefthKykloi'
 
 class Kykloi(models.Model):
     kyklos_id = models.AutoField(primary_key=True, verbose_name="Id")
@@ -133,7 +134,7 @@ class KykloiExamina(models.Model):
     comments = models.TextField(blank=True, verbose_name="comments")
     class Meta:
         db_table = 'kykloiExamina'
-        verbose_name= 'Kykloi_examina'
+        verbose_name= 'KykloiExamina'
 
 class ModuleKykloi(models.Model):
     module_id = models.IntegerField(primary_key=True, default='0', verbose_name="module_id")
@@ -143,7 +144,7 @@ class ModuleKykloi(models.Model):
     class Meta:
         db_table = 'moduleKykloi'
         unique_together = (("module_id", "kyklos_id", "semester"),)
-        verbose_name= 'Modules Kyklwn'
+        verbose_name= 'ModuleKykloi'
     def __unicode__(self):
         return self.semester
 	unique_together = (("module_id", "kyklos_id", "semester"),)
@@ -171,7 +172,7 @@ class ModulesTutors(models.Model):
     class Meta:
         db_table = 'modulesTutors'
         unique_together = (("module_id", "tutor_id"),)
-        verbose_name= 'Modules tutors'
+        verbose_name= 'modulesTutors'
     def __unicode__(self):
         return self.last_update
 	unique_together = (("module_id", "tutor_id"),)
@@ -185,7 +186,7 @@ class PubInstr(models.Model):
     class Meta:
         db_table = 'pubInstr'
         unique_together = (("pubid", "instrid"),)
-        verbose_name= 'Publication instr'
+        verbose_name= 'pubInstr'
     def __unicode__(self):
         return self.lastupdate
 	unique_together = (("pubid", "instrid"),)
@@ -197,10 +198,9 @@ class PubTypes(models.Model):
     lastupdate = models.DateTimeField(verbose_name="lastupdate")
     class Meta:
         db_table = 'pubTypes'
-        verbose_name= 'Publication types'
+        verbose_name= 'PubTypes'
     def __unicode__(self):
         return self.lastupdate
-	verbose_name= 'Publication types'
 
 class Publications(models.Model):
     id = models.AutoField(primary_key=True, verbose_name="id")

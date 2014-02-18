@@ -31,7 +31,11 @@ function get_action(submit){
 		 
     	<h2> Welcome! this is Directories app! </h2> 
 				<form action="" method="get">	{% csrf_token %}
-					{{form.as_p}} 
+					<p><label for="id_model_classes_field">Model classes field:</label> 
+						<select id="id_model_classes_field" name="model_classes_field">
+						</select>
+					</p>
+					<!--{0{form.as_p}} -->
 					<!-- if you comment javascript onclick it does not work... -->
 					<!-- Try to find other way than javascript?? maybe not trustworthy?? -->
 					<input type="submit" value="List items" name="_change" onclick="get_action(this);"/>
