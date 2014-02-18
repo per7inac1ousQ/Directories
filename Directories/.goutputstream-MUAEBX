@@ -101,13 +101,13 @@ class Katefth(models.Model):
     perigrafi_kat_en = models.CharField(blank=True, max_length=100, verbose_name="perigrafi katefthnsh english")
     class Meta:
         db_table = 'katefth'
-        verbose_name= 'Katefthnsh' 
+        verbose_name= 'Êatefthnsh' 
              
 class KatefthKykloi(models.Model):
     kat_id = models.IntegerField(primary_key=True, verbose_name="Id katefthnsh")
     kyklos_id = models.IntegerField(verbose_name="kykloi id")
     class Meta:
-        db_table = 'katefthKykloi'
+        db_table = 'katefth_kykloi'
         unique_together = ("kat_id", "kyklos_id")
         verbose_name= 'Katefthnsh Kykloi'
 
@@ -144,7 +144,7 @@ class ModuleKykloi(models.Model):
     class Meta:
         db_table = 'moduleKykloi'
         unique_together = (("module_id", "kyklos_id", "semester"),)
-        verbose_name= 'ModuleKykloi'
+        verbose_name= 'Module Kykloi'
     def __unicode__(self):
         return self.semester
 	unique_together = (("module_id", "kyklos_id", "semester"),)
@@ -172,7 +172,11 @@ class ModulesTutors(models.Model):
     class Meta:
         db_table = 'modulesTutors'
         unique_together = (("module_id", "tutor_id"),)
-        verbose_name= 'Modules tutors'
+        verbose_name= 'modules Tutors'
+    def __unicode__(self):
+        return self.last_update
+	unique_together = (("module_id", "tutor_id"),)
+	verbose_name= 'Modules tutors'
 
 class PubInstr(models.Model):
     pubid = models.IntegerField(primary_key=True, default='0', verbose_name="pubid")
