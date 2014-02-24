@@ -20,8 +20,8 @@ function get_action(submit){
 {% block content%} 
 	<div id="content" align="center">              
 		<!-- CSS and alignment changes??? -->
-		{% if messages %}
 		<div class="messages" align="left">
+		{% if messages %}
     		{% for message in messages %}
     		<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}!</li>
     		{% endfor %}

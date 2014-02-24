@@ -2,9 +2,15 @@
 {% load bootstrap3 %}
 {% block content%} 
 	<div id="content" align="center">
-		<h3> logger: </h3> {{logger}}
-		and
-		<h3> user object: </h3> {{user_obj}}
+		{% if messages %}
+		<div class="messages" align="left">
+    		{% for message in messages %}
+    		<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}!</li>
+    		{% endfor %}
+		</div>
+		<br />
+		{% endif %}	
+		<h3> Login Form: </h3>
 		<form action="" method="post"> {% csrf_token %}
 			{{form.as_p}}
 			<input type="submit" name="login" value="login" />

@@ -35,6 +35,16 @@
 		}); */
 		</script>
 	{% endblock %}
+	{% block login %} 
+		<div id="login" align="right">
+			{% load url from future %}
+			{% if user.is_authenticated %}
+				<p>Welcome, {{ user.username }}. Thanks for logging in. <a align="right" href="{% url 'Directories:logout'%}">Logout</a></p>
+			{% else %}
+				<p>Welcome, new user. Please log in.</p>
+			{% endif %}
+		</div>
+	{% endblock %}
 	{% block content %}
 	<div id="content">
 		<h2> This is the setup </h2>
