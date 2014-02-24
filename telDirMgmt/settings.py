@@ -12,17 +12,25 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
-
-# Baseline LDAP configuration without groups. (ask yours from the LDAP supervisorrrr!!!!!!!!)
-AUTH_LDAP_SERVER_URI = "ldap://ldap.example.com"
-
-AUTH_LDAP_BIND_DN = "cn=django-agent,dc=example,dc=com"
-AUTH_LDAP_BIND_PASSWORD = "phlebotinum"
-AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=example,dc=com",
-    ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
-# or perhaps:
+'''
+# TEST LDAP configuration start
+# Baseline LDAP configuration without groups. 
+AUTH_LDAP_SERVER_URI = "ldap://ldap.testathon.net:389/"
+AUTH_LDAP_BIND_DN = "" #"cn=stuart,ou=Users,dc=testathon,dc=net" Anonymous bind
+AUTH_LDAP_BIND_PASSWORD = "" 
+AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=testathon,dc=net",
+    ldap.SCOPE_SUBTREE, "(uid=%(user)s)")  # test LDAP ---> "ou=users,dc=testathon,dc=net"
+# uncomment below for direct bind
 # AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=users,dc=example,dc=com"
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
+#Groups config
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch("ou=users,dc=testathon,dc=net",
+    ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)"
+)
+AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
+
+AUTH_LDAP_REQUIRE_GROUP = "cn=enabled,ou=users,dc=testathon,dc=net" #allow authentication of this group
+#AUTH_LDAP_DENY_GROUP = "cn=disabled,ou=users,dc=testathon,dc=net" #deny authentication of this group
 
 # Populate the Django user from the LDAP directory.
 AUTH_LDAP_USER_ATTR_MAP = {
@@ -31,19 +39,70 @@ AUTH_LDAP_USER_ATTR_MAP = {
     "email": "mail"
 }
 
-AUTH_LDAP_PROFILE_ATTR_MAP = {
-    "employee_number": "employeeNumber"
-}
+AUTH_LDAP_START_TLS = True
 
 # This is the default, but I like to be explicit.
 AUTH_LDAP_ALWAYS_UPDATE_USER = True
 
-
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.request',
 )
+
+AUTH_LDAP_CONNECTION_OPTIONS = {
+        ldap.OPT_DEBUG_LEVEL: 0,
+        ldap.OPT_REFERRALS: 0,
+}
+# TEST LDAP configuration end
+'''
+
+# UOM LDAP configuration
+# Baseline LDAP configuration without groups. 
+AUTH_LDAP_SERVER_URI = "ldaps://selene.uom.gr:636"  # test LDAP ---> "ldap://ldap.testathon.net:389/"
+AUTH_LDAP_BIND_DN = "uid=dummy,ou=People,o=uom,c=gr" #"cn=stuart,ou=Users,dc=testathon,dc=net" 
+AUTH_LDAP_BIND_PASSWORD = "wwwtest" 
+AUTH_LDAP_USER_SEARCH = LDAPSearch("o=uom,c=gr",
+    ldap.SCOPE_SUBTREE, "(uid=%(user)s)")  # test LDAP ---> "ou=users,dc=testathon,dc=net"
+# uncomment below for direct bind
+# AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=users,dc=example,dc=com"
+
+#Groups config
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch("ou=People,o=uom,c=gr",
+    ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)"
+)
+AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
+
+#AUTH_LDAP_REQUIRE_GROUP = "cn=enabled,ou=People,o=uom,c=gr" #allow authentication of this group
+#AUTH_LDAP_DENY_GROUP = "cn=disabled,ou=users,dc=testathon,dc=net" #deny authentication of this group
+
+# Populate the Django user from the LDAP directory.
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail"
+}
+
+AUTH_LDAP_START_TLS = False
+
+# This is the default, but I like to be explicit.
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+AUTH_LDAP_CONNECTION_OPTIONS = {
+        ldap.OPT_DEBUG_LEVEL: 0,
+        ldap.OPT_REFERRALS: 0,
+}
+
+# UOM LDAP configuration end
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+    'django.core.context_processors.request',
+)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -75,11 +134,13 @@ INSTALLED_APPS = (
     'Directories',
 	'Directories.templatetags.dir_extras',
 	'crispy_forms',
-	'crispy_forms_foundation', #use this to implement specific template layout for use with the Foundation responsive web-design framework
-	'django_tables2',
-	'south',
+	'crispy_forms_foundation', # has foundation responsive web design... don't you have bootstrap for this??
+	'django_tables2', # table creation..... maybe delete??
+	'south', # database migration
+	'haystack', # search engine
 	'bootstrap3', #twitter bootstrap app for mobile development
 	'django_filters', # use it to create filters e.x. search function (Maybe use it to find and delete items as well)
+	#'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -89,6 +150,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 )
 
 ROOT_URLCONF = 'telDirMgmt.urls'
@@ -136,8 +198,25 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# security when using cookies. Not sure how to use them
+#SESSION_COOKIE_SECURE = True
+#CSRF_COOKIE_SECURE = True
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
-    '/var/www/django-petros/static/',
 )
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        #'PATH': '/usr/local/lib/python2.7/dist-packages/whoosh/',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+        #'PATH': '/usr/local/lib/python2.7/dist-packages/whoosh/index.py', #'/home/search/whoosh_index',
+       'STORAGE': 'file',
+        'POST_LIMIT': 128 * 1024 * 1024,
+        'INCLUDE_SPELLING': True,
+        'BATCH_SIZE': 100,
+        'EXCLUDED_INDEXES': ['thirdpartyapp.search_indexes.BarIndex'],
+    },
+}
+

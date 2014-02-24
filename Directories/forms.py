@@ -16,12 +16,14 @@ def models():
 
 def fields():
 	m_values = Attributes.objects.values_list('descr', flat=True)
-	#m_values = [value.encode("utf8") for value in model_list]
-	#print "fields() ", m_values
 	for val in m_values:
 		field_classes.append((val, val))
 	print "list: ", field_classes
 	return field_classes
+
+class loginForm(forms.Form):
+	user = forms.CharField()
+	password = forms.CharField(widget=forms.PasswordInput)
 	
 class dbForm(forms.Form):
 	model_classes_field = forms.ChoiceField(choices=models())#, required=True,) # maybe not include required=True"

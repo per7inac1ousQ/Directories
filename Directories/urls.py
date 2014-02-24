@@ -1,11 +1,13 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-7 -*-
 from django.conf.urls import patterns, url
+from django.conf.urls import include
 from Directories import views
 
 urlpatterns = patterns('',
 	url(r'^$', views.index, name='index'),
 	url(r'^login$', views.login, name='login'),
+	url(r'^search/', include('haystack.urls'), name='search'),
 	#url(r'^new$', views.create, name='create_directories'),
 	url(r'^list$', views.dlist, name='list_models'),
 	url(r'^new$', views.modelUpdate, name='update_directories'),
@@ -16,3 +18,4 @@ urlpatterns = patterns('',
 	#url(r'^edit/(?P<model_id>\d+)$', views.modelUpdate, name='update_directories'),
 	#url(r'^delete/(?P<pk>\d+)$', views.AttrDelete.as_view(), name='delete_directories'),
 )
+

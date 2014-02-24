@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
+import ldap
 import datetime
 import itertools
 import collections
-from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic
+import logging
+from django_auth_ldap.backend import LDAPBackend
+from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic, loginForm
 from Directories.models import Department, Attributes, Employees, Instructors, Katefth, KatefthKykloi, Kykloi, KykloiExamina, ModuleKykloi, Modules, ModulesTutors, PubInstr, PubTypes, Publications, Ranks, Service, Users, Works
 from django import forms
 from django.core import serializers
@@ -22,6 +25,10 @@ from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.forms import Textarea
 from django.contrib import messages
+from django.contrib.auth import authenticate
+from haystack.forms import ModelSearchForm
+from haystack.query import SearchQuerySet
+from haystack.views import SearchView
 #import django_tables as tables 
 
 model_classes = []
@@ -41,7 +48,43 @@ def fields(model, field):
 	return field_choices
 	
 def login(request):
-	return HttpResponse("Login details page")
+	logger = logging.getLogger('django_auth_ldap')
+	logger.addHandler(logging.StreamHandler())
+	logger.setLevel(logging.DEBUG)
+	form = loginForm()
+	if request.method == "POST":
+		form = loginForm(request.POST)
+		if form.is_valid():
+			user = form.cleaned_data['user']
+			password = form.cleaned_data['password']
+			print "user is:", user, "with password", password
+			# authenticate user
+			user = authenticate(username=user, password=password)
+			if user is not None:
+				# the password verified for the user
+				if user.is_active:
+					print("User is valid, active and authenticated")
+					return HttpResponse('Successful Authentication!')
+				else:
+					print("The password is valid, but the account has been disabled!")
+					return HttpResponse('Account disabled...')
+			else:
+				# the authentication system was unable to verify the username and password
+				print("The username and password were incorrect.")
+				return HttpResponse('The username and password were incorrect.')
+			print "user is:", user, "with password", password
+			'''
+			if user == name:
+				return HttpResponse('Successful Authentication!')
+			print "user input: ", user
+			'''
+		else:
+			return HttpResponse('ERROR in GET -- Return to form submission')
+	else:
+		form = loginForm()
+		print "no POST - form: ", form.errors
+		print "unbound form"
+	return render(request, 'Directories/login.html', {'logger':logger, 'form':form})
 	
 def index(request): #for two submit buttons:
 	print "start"
@@ -101,7 +144,8 @@ def dlist(request):
 		#### Below i have a possible approach to my problem on how to get a specific Attributes row using user submitted form data
 		#### Attributes.objects.get(name=product_form.cleaned_data['select_fields']) 
 				delete_items = form.cleaned_data['select_fields']
-				for item in delete_items:
+				items = [value.encode("utf8") for value in delete_items]
+				for item in items:
 					print "items: ", item
 #######	MyModel.objects.filter(id__in=request.POST.getlist('delete_list')).delete()
 					instance = model_class.objects.get(**{field_list[1]:item}) # default returns the model's id if called i.e. "print instance"
@@ -120,8 +164,6 @@ def dlist(request):
 				print "selectForm VALID!"
 				edit_items = form.cleaned_data['select_fields']
 				items = [value.encode("utf8") for value in edit_items]
-				print "edit items", edit_items
-				print "items: ", items
 				for item in items:
 					print "item: ", item
 					instance = model_class.objects.get(**{field_list[1]:item}) # default returns the model's id if called i.e. "print instance"
@@ -159,6 +201,7 @@ def modelEdit(request):
 	mvar = request.GET.get('m_table')
 	model_class = get_model('Directories', mvar)
 	print "variable sent to edit is:", mvar
+	#import pdb; pdb.set_trace()  for debugging but do not know how it works....
 	# create querysets using the field chosen in the list template
 	for item in update_list:
 		# i vale get_or_create() -->> p.x. rate, created = VideoRate.objects.get_or_create()
