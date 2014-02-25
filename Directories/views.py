@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
 from __future__ import unicode_literals
+import ldap
 import datetime
 import itertools
 import collections
-from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic
+import logging
+from django_auth_ldap.backend import LDAPBackend
+from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic, loginForm
 from Directories.models import Department, Attributes, Employees, Instructors, Katefth, KatefthKykloi, Kykloi, KykloiExamina, ModuleKykloi, Modules, ModulesTutors, PubInstr, PubTypes, Publications, Ranks, Service, Users, Works
 from django import forms
 from django.core import serializers
@@ -22,6 +25,11 @@ from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.forms import Textarea
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from haystack.forms import ModelSearchForm
+from haystack.query import SearchQuerySet
+from haystack.views import SearchView
 #import django_tables as tables 
 
 model_classes = []
@@ -40,9 +48,43 @@ def fields(model, field):
 		field_choices.append( (val, val), )
 	return field_choices
 	
-def login(request):
-	return HttpResponse("Login details page")
+def user_login(request):
+	if request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('Directories:index'))
+	form = loginForm()
+	if request.method == "POST":
+		form = loginForm(request.POST)
+		if form.is_valid():
+			user = form.cleaned_data['user']
+			password = form.cleaned_data['password']
+			print "user is:", user, "with password", password
+			# authenticate user
+			user = authenticate(username=user, password=password)
+			if user is not None:
+				# the password verified for the user
+				if user.is_active:
+					login(request, user)
+					print("User is valid, active and authenticated")
+					return HttpResponseRedirect(reverse('Directories:index'))
+					#return HttpResponse('Successful Authentication!')
+				else:
+					print("The password is valid, but the account has been disabled!")
+					return HttpResponse('Account disabled.')
+			else:
+				# the authentication system was unable to verify the username and password
+				messages.error(request, 'username and/or password were incorrect.')
+				return HttpResponseRedirect(reverse('Directories:login'))
+				#return HttpResponse('The username and password were incorrect.')
+			print "user is:", user, "with password", password
+		else:
+			return HttpResponse('ERROR in GET -- Return to form submission')
+	else:
+		form = loginForm()
+		print "no POST - form: ", form.errors
+		print "unbound form"
+	return render(request, 'Directories/login.html', {'form':form})
 	
+@login_required(login_url='Directories:login')
 def index(request): #for two submit buttons:
 	print "start"
 	#print fields()
@@ -54,7 +96,8 @@ def index(request): #for two submit buttons:
 			print "i am in _change submit button"
 			if form.is_valid(): # All validation rules pass
 				print "bound form, get data"
-				model_classes_field = form.cleaned_data['model_classes_field']	
+				model_classes_field = form.cleaned_data['model_classes_field']
+				request.session['model_table'] = model_classes_field	
 				return HttpResponseRedirect(reverse('Directories:list_models'))		
 				#return render(request, 'Directories/list.html', {'model_classes_field':model_classes_field})
 			else:
@@ -64,7 +107,8 @@ def index(request): #for two submit buttons:
 			print "i am in _add submit button"
 			if form.is_valid(): # All validation rules pass
 				print "bound form, get data"
-				model_classes_field = form.cleaned_data['model_classes_field']	
+				model_classes_field = form.cleaned_data['model_classes_field']
+				request.session['model_table'] = model_classes_field	
 				return HttpResponseRedirect(reverse('Directories:update_directories'))	
 				#return render(request, 'Directories/create.html', {'model_classes_field':model_classes_field})
 			else:
@@ -78,6 +122,7 @@ def index(request): #for two submit buttons:
 '''
 	View that displays a list of all model objects
 '''
+@login_required(login_url='Directories:login')
 def dlist(request):
 	print "list page"
 	m_tb_name = request.GET['model_classes_field'] # get the model table name
@@ -101,7 +146,8 @@ def dlist(request):
 		#### Below i have a possible approach to my problem on how to get a specific Attributes row using user submitted form data
 		#### Attributes.objects.get(name=product_form.cleaned_data['select_fields']) 
 				delete_items = form.cleaned_data['select_fields']
-				for item in delete_items:
+				items = [value.encode("utf8") for value in delete_items]
+				for item in items:
 					print "items: ", item
 #######	MyModel.objects.filter(id__in=request.POST.getlist('delete_list')).delete()
 					instance = model_class.objects.get(**{field_list[1]:item}) # default returns the model's id if called i.e. "print instance"
@@ -120,8 +166,6 @@ def dlist(request):
 				print "selectForm VALID!"
 				edit_items = form.cleaned_data['select_fields']
 				items = [value.encode("utf8") for value in edit_items]
-				print "edit items", edit_items
-				print "items: ", items
 				for item in items:
 					print "item: ", item
 					instance = model_class.objects.get(**{field_list[1]:item}) # default returns the model's id if called i.e. "print instance"
@@ -153,12 +197,14 @@ def dlist(request):
 	posted in the list template. Then use a form to gather user input for the new values and after the form is valid assign 
 	these to the corresponding queryset fields. In the end, the newly queryset has been made and you can save it in the DB.
 '''
+@login_required(login_url='Directories:login')
 def modelEdit(request):
 	print "Edit page"
 	#create a global list with the instances to be updated. This will be called in the modelEdit view
 	mvar = request.GET.get('m_table')
 	model_class = get_model('Directories', mvar)
 	print "variable sent to edit is:", mvar
+	#import pdb; pdb.set_trace()  for debugging but do not know how it works....
 	# create querysets using the field chosen in the list template
 	for item in update_list:
 		# i vale get_or_create() -->> p.x. rate, created = VideoRate.objects.get_or_create()
@@ -201,6 +247,7 @@ def modelEdit(request):
 '''
 	View for adding a new row to a model dynamically.
 '''
+@login_required(login_url='Directories:login')
 def modelUpdate(request):	
 	print "Creation page"
 	if 'model_classes_field' in request.GET:
@@ -231,6 +278,14 @@ def modelUpdate(request):
 		print "no form submission: ", form.errors
 	return render(request, 'Directories/create.html', {'model_name':model_name, 'field_names':field_names})
 
+'''
+	Logs out a user
+'''
+def user_logout(request):
+	logout(request)
+	messages.success(request, 'Succesfully logged out') 
+	return HttpResponseRedirect(reverse('Directories:login'))
+	
 #returns a list of field names
 def create_field_list(model):
 	print "list create "

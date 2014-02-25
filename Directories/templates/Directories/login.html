@@ -1,0 +1,20 @@
+{% extends "Directories/base.html" %}
+{% load bootstrap3 %}
+{% block content%} 
+	<div id="content" align="center">
+		{% if messages %}
+		<div class="messages" align="left">
+    		{% for message in messages %}
+    		<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}!</li>
+    		{% endfor %}
+		</div>
+		<br />
+		{% endif %}	
+		<h3> Login Form: </h3>
+		<form action="" method="post"> {% csrf_token %}
+			{{form.as_p}}
+			<input type="submit" name="login" value="login" />
+			<input type="reset" name="Clear" value="Clear" />
+		</form>
+	</div>
+{% endblock %}

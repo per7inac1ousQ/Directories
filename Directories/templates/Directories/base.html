@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{% static 'Directories/style.css' %}" />
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
 	</script> 
-    <title>{% block title %}You are at Directories app{% endblock %}</title>
+    <title>{% block title %} University of Macedonia Directories {% endblock %}</title>
 </head>
 
 <body>
@@ -34,6 +34,16 @@
 		alert( "ready!" );
 		}); */
 		</script>
+	{% endblock %}
+	{% block login %} 
+		<div id="login" align="right">
+			{% load url from future %}
+			{% if user.is_authenticated %}
+				<p>Welcome, {{ user.username }}. Thanks for logging in. <a align="right" href="{% url 'Directories:logout'%}">Logout</a></p>
+			{% else %}
+				<p>Welcome, new user. Please log in.</p>
+			{% endif %}
+		</div>
 	{% endblock %}
 	{% block content %}
 	<div id="content">

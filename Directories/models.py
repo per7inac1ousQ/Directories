@@ -18,7 +18,7 @@ class Attributes(models.Model):
     attr_id = models.AutoField(max_length=11, primary_key=True, verbose_name="Id")
     descr = models.CharField(max_length=140, verbose_name="Description") #An valw editable=False dn 8a to emfanizei sto ModelForm
     descr_en = models.CharField(max_length=140, verbose_name="English Description")
-    notes = models.CharField(max_length=250, blank=True, verbose_name="Notes") 
+    notes = models.CharField(max_length=250, verbose_name="Notes") 
     class Meta:
         db_table = 'attributes'
         verbose_name= 'Attributes'
