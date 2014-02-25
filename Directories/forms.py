@@ -18,7 +18,6 @@ def fields():
 	m_values = Attributes.objects.values_list('descr', flat=True)
 	for val in m_values:
 		field_classes.append((val, val))
-	print "list: ", field_classes
 	return field_classes
 
 class loginForm(forms.Form):

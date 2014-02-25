@@ -55,11 +55,11 @@ def user_login(request):
 	if request.method == "POST":
 		form = loginForm(request.POST)
 		if form.is_valid():
-			user = form.cleaned_data['user']
+			username = form.cleaned_data['user']
 			password = form.cleaned_data['password']
-			print "user is:", user, "with password", password
+			print "user is:", username, "with password", password
 			# authenticate user
-			user = authenticate(username=user, password=password)
+			user = authenticate(username=username, password=password)
 			if user is not None:
 				# the password verified for the user
 				if user.is_active:
@@ -91,7 +91,7 @@ def index(request): #for two submit buttons:
 	form = dbForm()
 	if request.method == 'GET':	
 		print "get!!!"
-		if '_change' in request.GET:
+		if "_change" in request.GET:
 			form = dbForm(request.GET) 
 			print "i am in _change submit button"
 			if form.is_valid(): # All validation rules pass
@@ -101,7 +101,7 @@ def index(request): #for two submit buttons:
 				return HttpResponseRedirect(reverse('Directories:list_models'))		
 				#return render(request, 'Directories/list.html', {'model_classes_field':model_classes_field})
 			else:
-				return HttpResponse('ERROR in GET -- Return to form submission')
+				return HttpResponse('ERROR in GET -- Return to form submission', form.errors)
 		elif '_add' in request.GET:
 			form = dbForm(request.GET)
 			print "i am in _add submit button"
@@ -112,7 +112,9 @@ def index(request): #for two submit buttons:
 				return HttpResponseRedirect(reverse('Directories:update_directories'))	
 				#return render(request, 'Directories/create.html', {'model_classes_field':model_classes_field})
 			else:
-				return HttpResponse('ERROR in GET -- Return to form submission')
+				return HttpResponse('ERROR in GET -- Return to form submission', form.errors)
+		else:
+			print "WTF??"
 	else:
 		form = dbForm()
 		print "no POST - form: ", form.errors
@@ -122,12 +124,13 @@ def index(request): #for two submit buttons:
 '''
 	View that displays a list of all model objects
 '''
-@login_required(login_url='Directories:login')
+#@login_required(login_url='Directories:login')
 def dlist(request):
 	print "list page"
 	m_tb_name = request.GET['model_classes_field'] # get the model table name
-	model_class = get_model('Directories', m_tb_name)
+	model_class = get_model('Directories', m_tb_name) #request.session['model_table']) #################################
 	print "name ", m_tb_name
+	print "class ", model_class
 	model_name = model_class._meta.db_table
 	model_list = list(model_class.objects.all()) 
 	fields = get_model_fields(model_class)
@@ -197,7 +200,7 @@ def dlist(request):
 	posted in the list template. Then use a form to gather user input for the new values and after the form is valid assign 
 	these to the corresponding queryset fields. In the end, the newly queryset has been made and you can save it in the DB.
 '''
-@login_required(login_url='Directories:login')
+#@login_required(login_url='Directories:login')
 def modelEdit(request):
 	print "Edit page"
 	#create a global list with the instances to be updated. This will be called in the modelEdit view
@@ -247,7 +250,7 @@ def modelEdit(request):
 '''
 	View for adding a new row to a model dynamically.
 '''
-@login_required(login_url='Directories:login')
+#@login_required(login_url='Directories:login')
 def modelUpdate(request):	
 	print "Creation page"
 	if 'model_classes_field' in request.GET:
