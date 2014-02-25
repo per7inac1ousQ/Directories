@@ -12,13 +12,59 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
+'''
+# TEST LDAP configuration start
+# Baseline LDAP configuration without groups.
+AUTH_LDAP_SERVER_URI = "ldap://ldap.testathon.net:389/"
+AUTH_LDAP_BIND_DN = "" #"cn=stuart,ou=Users,dc=testathon,dc=net" Anonymous bind
+AUTH_LDAP_BIND_PASSWORD = ""
+AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=testathon,dc=net",
+ldap.SCOPE_SUBTREE, "(uid=%(user)s)") # test LDAP ---> "ou=users,dc=testathon,dc=net"
+# uncomment below for direct bind
+# AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=users,dc=example,dc=com"
+
+#Groups config
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch("ou=users,dc=testathon,dc=net",
+ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)"
+)
+AUTH_LDAP_GROUP_TYPE = GroupOfNamesType()
+
+AUTH_LDAP_REQUIRE_GROUP = "cn=enabled,ou=users,dc=testathon,dc=net" #allow authentication of this group
+#AUTH_LDAP_DENY_GROUP = "cn=disabled,ou=users,dc=testathon,dc=net" #deny authentication of this group
+
+# Populate the Django user from the LDAP directory.
+AUTH_LDAP_USER_ATTR_MAP = {
+"first_name": "givenName",
+"last_name": "sn",
+"email": "mail"
+}
+
+AUTH_LDAP_START_TLS = True
+
+# This is the default, but I like to be explicit.
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS + (
+'django.core.context_processors.request',
+)
+
+AUTH_LDAP_CONNECTION_OPTIONS = {
+ldap.OPT_DEBUG_LEVEL: 0,
+ldap.OPT_REFERRALS: 0,
+}
+# TEST LDAP configuration end
+'''
+
 # UOM LDAP configuration
-# Baseline LDAP configuration without groups. 
-AUTH_LDAP_SERVER_URI = ""  # test LDAP ---> "ldap://ldap.testathon.net:389/"
-AUTH_LDAP_BIND_DN = "" #"cn=stuart,ou=Users,dc=testathon,dc=net" 
-AUTH_LDAP_BIND_PASSWORD = "" 
+# Baseline LDAP configuration without groups.
+AUTH_LDAP_SERVER_URI = "ldaps://selene.uom.gr:636" # test LDAP ---> "ldap://ldap.testathon.net:389/"
+AUTH_LDAP_BIND_DN = "uid=dummy,ou=People,o=uom,c=gr" #"cn=stuart,ou=Users,dc=testathon,dc=net"
+AUTH_LDAP_BIND_PASSWORD = ""
 AUTH_LDAP_USER_SEARCH = LDAPSearch("o=uom,c=gr",
-    ldap.SCOPE_SUBTREE, "(uid=%(user)s)")  # test LDAP ---> "ou=users,dc=testathon,dc=net"
+    ldap.SCOPE_SUBTREE, "(uid=%(user)s)") # test LDAP ---> "ou=users,dc=testathon,dc=net"
 # uncomment below for direct bind
 # AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=users,dc=example,dc=com"
 
@@ -86,15 +132,15 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Directories',
-	'Directories.templatetags.dir_extras',
-	'crispy_forms',
-	'crispy_forms_foundation', # has foundation responsive web design... don't you have bootstrap for this??
-	'django_tables2', # table creation..... maybe delete??
-	'south', # database migration
-	'haystack', # search engine
-	'bootstrap3', #twitter bootstrap app for mobile development
-	'django_filters', # use it to create filters e.x. search function (Maybe use it to find and delete items as well)
-	#'debug_toolbar',
+'Directories.templatetags.dir_extras',
+'crispy_forms',
+'crispy_forms_foundation', # has foundation responsive web design... don't you have bootstrap for this??
+'django_tables2', # table creation..... maybe delete??
+'south', # database migration
+'haystack', # search engine
+'bootstrap3', #twitter bootstrap app for mobile development
+'django_filters', # use it to create filters e.x. search function (Maybe use it to find and delete items as well)
+#'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -122,13 +168,13 @@ AUTHENTICATION_BACKENDS = (
 DATABASES = {'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'praktiki-uomdb',
-		'USER': 'praktikos',
-		'PASSWORD': '*******',
-		'HOST': '195.251.213.90',
-		'PORT': '3306',
-		'OPTIONS': {
-					#'charset': 'windows-1253'
-					'charset' : 'utf8',
+'USER': 'praktikos',
+'PASSWORD': '',
+'HOST': '195.251.213.90',
+'PORT': '3306',
+'OPTIONS': {
+#'charset': 'windows-1253'
+'charset' : 'utf8',
                     'use_unicode': True, },#greek_general_ci
     }
 }
@@ -173,4 +219,3 @@ HAYSTACK_CONNECTIONS = {
         'EXCLUDED_INDEXES': ['thirdpartyapp.search_indexes.BarIndex'],
     },
 }
-
