@@ -19,7 +19,7 @@ from django.template import loader, RequestContext
 from django.db import models
 from django.shortcuts import render, get_object_or_404, redirect, render_to_response
 from django.template import Template
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
@@ -27,7 +27,6 @@ from django.forms import Textarea
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-#from django.utils import simplejson
 from haystack.forms import ModelSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import SearchView
@@ -89,6 +88,9 @@ def index(request): #for two submit buttons:
 		del request.session['model_table']	
 	else:
 		print "session model_table is null"
+	#nullify your field_list. List may have items because someone might have pressed the 'back' button in his browser.
+	if field_list:
+		del field_list[:]
 	form = dbForm()
 	# check if form has been submitted since user may have returned back to form page
 	if request.method == 'GET':	
@@ -134,13 +136,12 @@ def dlist(request):
 	print "list page"
 	m_tb_name = request.session['model_table']#request.GET['model_classes_field'] # get the model table name
 	model_class = get_model('Directories', m_tb_name) #request.session['model_table']) #################################
-	print "name ", m_tb_name
-	print "class ", model_class
 	model_name = model_class._meta.db_table
 	model_list = list(model_class.objects.all()) 
 	fields = get_model_fields(model_class)
 	field_names = model_class._meta.get_all_field_names()
-##################### check form here
+	print "choices", field_choices
+	# from dir_extras.py.... ---> fields_lst= list(model_class.objects.values_list(field, flat=True)) 		
 	form = selectForm2(my_choices = field_choices)
 	# create a new list of field names here for future application
 	if not field_list:
@@ -156,8 +157,9 @@ def dlist(request):
 		#model_class = get_model('Directories', m_name)
 		#model_class = get_model('Directories', m_tb_name)
 	m_values = model_class.objects.values_list(field_list[1], flat=True) 
-	for val in m_values:
-		field_choices.append( (val, val), )
+	if not field_choices:
+		for val in m_values:
+			field_choices.append( (val, val), )
 	#z = remove_field_list(model_class) ###################################!!NOTE: removes field_list. you may need 
 	if request.method == 'POST':
 		if "_delete" in request.POST: 

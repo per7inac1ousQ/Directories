@@ -1,13 +1,16 @@
 {% load dir_extras %}
 {% load bootstrap3 %}
-<table>
 	
 	{% for data in fields_lst %}
-		<tr>
-			<td> {{data}} </td>	
-		</tr>
+		
+			{% if data == '' %}
+				<p> - </p>
+			
+			{% else %}
+				 <p>{{data}} </p>
+			{% endif %}
 		
 	{% endfor %}
-</table>
+
 
 

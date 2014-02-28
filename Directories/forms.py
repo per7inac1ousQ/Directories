@@ -45,8 +45,8 @@ class selectForm2(forms.Form):
 	def __init__(self, *args, **kwargs):
 		choices = kwargs.pop('my_choices')
 		super(selectForm2, self).__init__(*args, **kwargs)
-		self.fields["select_fields"] = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple(attrs={'class': 'my-class'}), choices=choices)
-		#self.fields["select_fields"].widget = forms.CheckboxSelectMultiple()
+		#initialise multiple select checkboxes with id = checkFields.
+		self.fields["select_fields"] = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple(attrs={'id': 'checkFields'}), choices=choices)
 	
 def get_fields_dynamic(c_model):
 	model_class = get_model('Directories', c_model)	

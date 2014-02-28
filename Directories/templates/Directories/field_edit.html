@@ -6,13 +6,8 @@
 	{% for data in fields_lst %}
 		<tr>
 			<td> 
-			<!--form action="list" method="post">	{0% csrf_token %}--> 
-				<input type="checkbox" value="Delete" />
 				{{data}}
-			
 			</td>
-			<!--td><input type="checkbox" /> </td>
-			<td>  <a href=""> {{data}} </a></td-->	
 		</tr>
 		
 	{% endfor %}
