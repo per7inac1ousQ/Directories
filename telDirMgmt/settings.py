@@ -113,10 +113,9 @@ CRISPY_TEMPLATE_PACK = 'foundation'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 't_2tob1#mgc_dm_-fv6exu_ze!%9pu^n@=)dkg$*lwoxd*w26+'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY & SCALABILITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['195.251.213.61']
 
@@ -135,17 +134,18 @@ INSTALLED_APPS = (
 	'Directories.templatetags.dir_extras',
 	'crispy_forms',
 	'crispy_forms_foundation', # has foundation responsive web design... don't you have bootstrap for this??
-	'django_tables2', # table creation..... maybe delete??
+	'django_tables2', # table creation..... not in use, maybe delete it
 	'south', # database migration
 	'haystack', # search engine
 	'bootstrap3', #twitter bootstrap app for mobile development
-	'django_filters', # use it to create filters e.x. search function (Maybe use it to find and delete items as well)
-	#'debug_toolbar',
+	'django_filters', # use it to create filters e.x. search function... not in use, maybe delete it
+	#'debug_toolbar',  # cannot make it work
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware', #cannot make it work
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -192,11 +192,13 @@ USE_L10N = True
 
 USE_TZ = True
 
-# security when using cookies. Not sure how to use them
-SESSION_COOKIE_SECURE = True
+# If True then cookies are stored when https is served otherwise user cannot log-in
+#SESSION_COOKIE_SECURE = True
 #CSRF_COOKIE_SECURE = True
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_URL = '/static/'
@@ -204,6 +206,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
+# Haystack search app configuration. Haystack is not yet deployed in my app
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',

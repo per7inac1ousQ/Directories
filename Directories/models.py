@@ -101,15 +101,15 @@ class Katefth(models.Model):
     perigrafi_kat_en = models.CharField(blank=True, max_length=100, verbose_name="perigrafi katefthnsh english")
     class Meta:
         db_table = 'katefth'
-        verbose_name= 'Katefthnsh' 
+        verbose_name= 'Katefth' 
              
 class KatefthKykloi(models.Model):
     kat_id = models.IntegerField(primary_key=True, verbose_name="Id katefthnsh")
     kyklos_id = models.IntegerField(verbose_name="kykloi id")
     class Meta:
-        db_table = 'katefthKykloi'
+        db_table = 'katefth_kykloi'
         unique_together = ("kat_id", "kyklos_id")
-        verbose_name= 'Katefthnsh Kykloi'
+        verbose_name= 'KatefthKykloi'
 
 class Kykloi(models.Model):
     kyklos_id = models.AutoField(primary_key=True, verbose_name="Id")
@@ -133,8 +133,8 @@ class KykloiExamina(models.Model):
     notes_en = models.CharField(max_length=255, blank=True, verbose_name="notes_en")
     comments = models.TextField(blank=True, verbose_name="comments")
     class Meta:
-        db_table = 'kykloiExamina'
-        verbose_name= 'Kykloi Examina'
+        db_table = 'kykloi_examina'
+        verbose_name= 'kykloi_examina'
 
 class ModuleKykloi(models.Model):
     module_id = models.IntegerField(primary_key=True, default='0', verbose_name="module_id")
@@ -142,7 +142,7 @@ class ModuleKykloi(models.Model):
     semester = models.IntegerField(default='0', verbose_name="semester")
     indexing = models.IntegerField(default='99', verbose_name="indexing")
     class Meta:
-        db_table = 'moduleKykloi'
+        db_table = 'module_kykloi'
         unique_together = (("module_id", "kyklos_id", "semester"),)
         verbose_name= 'ModuleKykloi'
     def __unicode__(self):
@@ -170,7 +170,7 @@ class ModulesTutors(models.Model):
     tutor_id = models.IntegerField(default='0', verbose_name="tutor_id")
     last_update = models.DateTimeField(verbose_name="last_update")
     class Meta:
-        db_table = 'modulesTutors'
+        db_table = 'modules_tutors'
         unique_together = (("module_id", "tutor_id"),)
         verbose_name= 'Modules tutors'
 

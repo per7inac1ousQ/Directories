@@ -30,17 +30,22 @@ function get_action(submit){
 		{% endif %}	
     	<h2> Welcome! this is Directories app! </h2> 
 				<form action="" method="get">	{% csrf_token %}
-					{0{ form.model_classes_field.errors }}
+					{{ form.errors }}
 					<p><label for="id_model_classes_field">Choose from one of the existing tables:</label> 
                     <select id="id_model_classes_field" name="model_classes_field"> 		
 					{% for choice in form.fields.model_classes_field.choices %}
-                           <option value="{{choice.1}}">{{choice.0}}</option> 
+						{% if choice.0 == "Katefthnsh" %}
+							<option name="model_classes_field" value="{{choice.1}}">{{choice.0}}</option> 
+                        {% else %}
+							<option name="model_classes_field" value="{{choice.0}}">{{choice.0}}</option>   
+					    {% endif %}
+                           <!-- option value="{0{choice.1}}">{0{choice.0}}</option--> 
                     {% endfor %} 
 					</select> </p> 
 					<!--{0{form.as_p}} -->
 					<!-- cannot uncomment <onclick="get_action(this);"> because it returns MultiValueDictKeyError for model_classes_field -->
-					<input type="submit" value="List items" name="_change" onclick="get_action(this);"/-->
-					<input type="submit" value="Create" name="_add" onclick="get_action(this);"/-->
+					<input type="submit" value="List items" name="_change" /> <!-- onclick="get_action(this);"/-->
+					<input type="submit" value="Create" name="_add" /> <!-- onclick="get_action(this);"/-->
                 </form>
     </div>
     <div id="bottom">
