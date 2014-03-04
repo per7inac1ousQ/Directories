@@ -1,18 +1,39 @@
 {% extends "Directories/base.html" %}
 {% load dir_extras %} 
+{% load bootstrap3 %}
 {% block title %} Directories App {% endblock %}
 <body>
 {% block content%} 
 	<div id="content" align="center">
 		<h2> List of Directories! </h2> 
 		<br />
+		<form class="form_drop_list" action="" method="get" class="form">	{% csrf_token %}
+			{{ form_drop_list.errors }}
+			<ul>
+			<select class="form-control" id="id_mod_classes" name="mod_classes"> 		
+			{% for choice in form_drop_list.fields.mod_classes.choices %}
+				{% if choice.0 == "Katefthnsh" %}
+					<option name="mod_classes" value="{{choice.1}}">{{choice.0}}</option> 
+				{% else %}
+					<option name="mod_classes" value="{{choice.0}}">{{choice.0}}</option>
+				{% endif %}
+				   <!-- option value="{0{choice.1}}">{0{choice.0}}</option--> 
+			{% endfor %} 
+			</select> 
+			{% buttons %}
+				<button type="submit" name="_list" class="btn btn-primary"/>
+				{% bootstrap_icon "asterisk" %} List items
+				</button>
+			{% endbuttons %}
+			</ul>
+		</form>
 		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the output -->		
 		<table class="data-listing">
 		<thead>
 		{% with fields|slice:"1:" as sliced_fields %}
 			<tr>
 			{% for field in sliced_fields %}
-					<th class="column-{{ field.verbose_name|slugify }}">{{ field.verbose_name|slugify }}</th>
+					<th class="column-{{ field.verbose_name|slugify }}">{{ field.verbose_name }}</th>
 			{% endfor %}
 			</tr>
 		{% endwith %}
@@ -27,7 +48,13 @@
 						<ul id="checkFields">
 							{% for x,y in form.fields.select_fields.choices %}
 						<li>
-							<input id="checkbox" name="select_fields" type="checkbox" value="{{x}}" /> {{y}} <br />
+							<input id="checkbox" name="select_fields" type="checkbox" value="{{x}}" /> 
+							{% if y|length > 1000 %}
+								{{ y|truncatewords:20 }}
+							{% else %}
+								{{y}}
+							{% endif %} 
+							<br />
 						</li>
 							{% endfor %}
 						</ul>
@@ -42,8 +69,16 @@
 		{% endwith %}
 		</tbody>
 		</table> <br />
-		<input type="submit" value="Delete selected items" name="_delete" /> 
-		<input type="submit" value="Update selected items" name="_edit" /> 
+		{% buttons %}
+			<button type="submit" name="_delete" class="btn btn-primary"/>
+				{% bootstrap_icon "asterisk" %} Delete selected items
+			</button>
+			<button type="submit" name="_edit" class="btn btn-primary" />
+				{% bootstrap_icon "asterisk" %} Update selected items
+			</button>
+		{% endbuttons %}
+		<!--input type="submit" value="Delete selected items" name="_delete" /--> 
+		<!--input type="submit" value="Update selected items" name="_edit" /--> 
 		</form>
 	</div>
 {% endblock %}

@@ -27,6 +27,9 @@ class loginForm(forms.Form):
 class dbForm(forms.Form):
 	model_classes_field = forms.ChoiceField(choices=models())#, required=True,) # maybe not include required=True"
 	
+class listForm(forms.Form):
+	mod_classes = forms.ChoiceField(choices=models())
+	
 class editForm(forms.Form):
 	field = forms.CharField()
 

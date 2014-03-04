@@ -2,12 +2,16 @@
 {% load bootstrap3 %}
 	
 	{% for data in fields_lst %}
-		
+					
 			{% if data == '' %}
 				<p> - </p>
 			
 			{% else %}
-				 <p>{{data}} </p>
+				{% if y|length > 1000 %}
+					<p>{{ data|truncatewords:20 }}</p>
+				{% else %}
+					<p>{{data}} </p>
+				{% endif %} 	 
 			{% endif %}
 		
 	{% endfor %}

@@ -1,7 +1,5 @@
 {% load staticfiles %}
 {% load bootstrap3 %}
-
-{# Delete the '0' to Load CSS and JavaScript #}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
@@ -17,18 +15,61 @@
 </head>
 
 <body>
-	<div id="container" align="center">
+	<div class="container" align="center">
 		{% block navigation %}
 		{% load url from future %}
-		
-			<div id="top">
-					<ul class="navBar" >
-						<li class="barItem"><a href="{% url 'Directories:index'%}"> ΑΡΧΗ </a></li>
-						<li class="barItem"><a href="http://www.uom.gr"> Πανεπιστήμιο Μακεδονίας </a></li>
-						<li class="barItem"><a href="about.html"> About page </a></li>
-					</ul>
-			</div>
-			
+			<nav class="navbar navbar-default" role="navigation">
+			  <div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+				  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+				  <a class="navbar-brand" href="http://www.uom.gr"><img /></a>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				  <ul class="nav navbar-nav">
+					<li class="barItem"><a href="{% url 'Directories:index'%}">ΑΡΧΗ</a></li>
+					<li class="barItem"><a href="http://www.uom.gr">Πανεπιστήμιο Μακεδονίας</a></li>
+				  </ul>
+				  <form class="navbar-form navbar-left" role="search">
+					<div class="form-group">
+					  <input type="text" class="form-control" placeholder="Search">
+					</div>
+					<button type="submit" class="btn btn-default">Submit</button>
+				  </form>
+				  <ul class="nav navbar-nav navbar-right">
+					  <!-- Button trigger modal >
+						<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+						  Launch tutorial
+						</button>
+						<!-- Modal >
+						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						  <div class="modal-dialog">
+							<div class="modal-content">
+							  <div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+							  </div>
+							  <div class="modal-body">
+								...
+							  </div>
+							  <div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-primary">Save changes</button>
+							  </div>
+							</div>
+						  </div>
+						</div-->
+					<li class="barItem"><a href="about.html">About page</a></li>
+				  </ul>
+				</div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
 		{% endblock %}
 		{% block login %} 
 			<div id="user" align="right">

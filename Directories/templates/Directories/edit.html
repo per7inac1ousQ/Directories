@@ -5,10 +5,18 @@
 	<div id="content" align="center">
 		<h3> Update entry</h3> 
 		<br />
-		<form action="" method="post"> {% csrf_token %}
-		{{form.as_p}}
-		<input type="submit" name="_alter" value="Update" />
-		<input type="reset" name="Clear" value="Clear" />
+		<form action="" method="post" class="form"> {% csrf_token %}
+		{% bootstrap_form form %} <br />
+		{% buttons %}
+			<button type="submit" name="_alter" class="btn btn-primary"/>
+				{% bootstrap_icon "asterisk" %} Update
+			</button>
+			<button type="reset" name="Clear" class="btn btn-primary" />
+				{% bootstrap_icon "asterisk" %} Clear
+			</button>
+		{% endbuttons %}
+		<!--input type="submit" name="_alter" value="Update" /-->
+		<!--input type="reset" name="Clear" value="Clear" /-->
 		</form>	
 		</div>
 {% endblock %}

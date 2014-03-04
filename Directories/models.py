@@ -9,6 +9,8 @@
 #
 # Also note: You'll have to insert the output of 'django-admin.py sqlcustom [appname]'
 # into your database.
+# 
+# blank = True lets fields blank.
 from __future__ import unicode_literals
 from django.db import models
 
@@ -16,9 +18,9 @@ attr_data = []
 
 class Attributes(models.Model):
     attr_id = models.AutoField(max_length=11, primary_key=True, verbose_name="Id")
-    descr = models.CharField(max_length=140, verbose_name="Description") #An valw editable=False dn 8a to emfanizei sto ModelForm
+    descr = models.CharField(max_length=140, verbose_name="Description") #if editable=False will not display at ModelForm
     descr_en = models.CharField(max_length=140, verbose_name="English Description")
-    notes = models.CharField(max_length=250, verbose_name="Notes") 
+    notes = models.CharField(max_length=250, verbose_name="Notes", blank=True) 
     class Meta:
         db_table = 'attributes'
         verbose_name= 'Attributes'

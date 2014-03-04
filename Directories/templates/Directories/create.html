@@ -7,23 +7,19 @@
 	<div id="content" align="center">
 		<h3> Insert a new entry to {{model_name}} table </h3> 
 		<br />
-		{{model_class}}
-		{% if instance_list %}
-			{% for instance in instance_list %}
-				{{instance}}
-			{% endfor %}
-		{% endif %}
-		<!-- {0% url 'Directories:index' %}-->
-		<form action="" method="post"> {% csrf_token %}
-		{0{ form.non_field_errors }}<br />
-		{{form.as_p}}
-		{% for f_name in field_names %}	
-			{% if not forloop.first %}		
-				{{f_name}}:	<input id="edit-{{f_name}}" type="text" name={{f_name}} /><br />
-			{% endif %}
-		{% endfor %}<br />
-		<input type="submit" name="_update" value="Create" />
-		<input type="reset" name="Clear" value="Clear" />
+		<form action="" method="post" class="form"> {% csrf_token %}
+		{% bootstrap_form form %} <br />
+		{% buttons %}
+			<button type="submit" name="_update" class="btn btn-primary"/>
+				{% bootstrap_icon "asterisk" %} Create
+			</button>
+			<button type="reset" name="Clear" class="btn btn-primary" />
+				{% bootstrap_icon "asterisk" %} Clear
+			</button>
+		{% endbuttons %}
+		{{ form.fieldname.errors.as_text }}
+		<!--input type="submit" name="_update" value="Create" /-->
+		<!--input type="reset" name="Clear" value="Clear" /-->
 		</form>	
 	</div>
 {% endblock %}

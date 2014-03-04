@@ -7,7 +7,7 @@ import itertools
 import collections
 import logging
 from django_auth_ldap.backend import LDAPBackend
-from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic, loginForm
+from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic, loginForm, listForm
 from Directories.models import Department, Attributes, Employees, Instructors, Katefth, KatefthKykloi, Kykloi, KykloiExamina, ModuleKykloi, Modules, ModulesTutors, PubInstr, PubTypes, Publications, Ranks, Service, Users, Works
 from django import forms
 from django.core import serializers
@@ -80,22 +80,12 @@ def user_login(request):
 	
 @login_required(login_url='Directories:login')
 def index(request): #for two submit buttons:
-	print "start"
-	#check that model table name is not stored in the session before initiating it
-	if 'model_table' in request.session:
-		###print fields(request, 'descr') damn fields() runs here
-		print "session model_table is:", request.session['model_table']
-		del request.session['model_table']	
-	else:
-		print "session model_table is null"
-	#nullify your field_list. List may have items because someone might have pressed the 'back' button in his browser.
-	if field_list:
-		del field_list[:]
+	print "index"
+	clean(request) # clean all data that may have been previously added
 	form = dbForm()
 	# check if form has been submitted since user may have returned back to form page
 	if request.method == 'GET':	
-		print "get!!!"
-		# ifs not working for some reason.... they are useless as they are
+		print "get request"
 		if "_change" in request.GET:
 			form = dbForm(request.GET) 
 			print "i am in _change submit button"
@@ -103,11 +93,11 @@ def index(request): #for two submit buttons:
 				print "bound form, get data"
 				model_classes_field = form.cleaned_data['model_classes_field']
 				request.session['model_table'] = model_classes_field	
-				print "success??"
+				print "success"
 				return HttpResponseRedirect(reverse('Directories:list_models'))		
 			else:
-				print "no POST - form: ", form.errors
-				return HttpResponse('ERROR in GET -- Return to form submission', form.errors)
+				#will return form errors
+				return render(request, 'Directories/index.html', {'form':form})
 		elif '_add' in request.GET:
 			form = dbForm(request.GET)
 			print "i am in _add submit button"
@@ -117,11 +107,11 @@ def index(request): #for two submit buttons:
 				request.session['model_table'] = model_classes_field	
 				return HttpResponseRedirect(reverse('Directories:update_directories'))	
 			else:
-				print "no POST - form: ", form.errors
-				return HttpResponse('ERROR in GET -- Return to form submission', form.errors)
+				#will return form errors
+				return render(request, 'Directories/index.html', {'form':form})
 		
 		else:
-			print "WTF??"
+			print "submit button not pressed."
 	else:
 		form = dbForm()
 		print "no POST - form: ", form.errors
@@ -134,56 +124,53 @@ def index(request): #for two submit buttons:
 @login_required(login_url='Directories:login')
 def dlist(request):
 	print "list page"
+	print "field_list", field_list
 	m_tb_name = request.session['model_table']#request.GET['model_classes_field'] # get the model table name
 	model_class = get_model('Directories', m_tb_name) #request.session['model_table']) #################################
 	model_name = model_class._meta.db_table
 	model_list = list(model_class.objects.all()) 
 	fields = get_model_fields(model_class)
 	field_names = model_class._meta.get_all_field_names()
-	print "choices", field_choices
-	# from dir_extras.py.... ---> fields_lst= list(model_class.objects.values_list(field, flat=True)) 		
-	form = selectForm2(my_choices = field_choices)
-	# create a new list of field names here for future application
+	print "choices", field_choices 		            
 	if not field_list:
 		create_field_list(model_class)
 		request.session['field_list'] = field_list
-	#else:
-	#	remove_field_list(model_class)
-	#	create_field_list(model_class)
-	#	print "field list deleted and created", field_list
-	#the fields() function start
-	#if 'model_table' in request.session:	
-		#m_name = request.session['model_table']
-		#model_class = get_model('Directories', m_name)
-		#model_class = get_model('Directories', m_tb_name)
+		print "field_list", field_list
 	m_values = model_class.objects.values_list(field_list[1], flat=True) 
 	if not field_choices:
 		for val in m_values:
 			field_choices.append( (val, val), )
+	form = selectForm2(my_choices = field_choices, prefix="select")
+	form_drop_list = listForm(prefix="drop_list") #for the models dropdown list       
 	#z = remove_field_list(model_class) ###################################!!NOTE: removes field_list. you may need 
 	if request.method == 'POST':
 		if "_delete" in request.POST: 
-			print "SLECTEDDDDDDDDDDDD SAYIN!"
+			print "_delete pressed"
 			form = selectForm2(request.POST, my_choices = field_choices)
 			if form.is_valid(): # All validation rules pass
 				print "FORM VALID!"
 		#### Below i have a possible approach to my problem on how to get a specific Attributes row using user submitted form data
 		#### Attributes.objects.get(name=product_form.cleaned_data['select_fields']) 
 				delete_items = form.cleaned_data['select_fields']
-				items = [value.encode("utf8") for value in delete_items]
+				print "delete_items", delete_items
+				items = [value for value in delete_items]
 				for item in items:
-					print "items: ", item
+					item_en = item.encode("utf8")
+					print "encoded item:", item_en
 #######	MyModel.objects.filter(id__in=request.POST.getlist('delete_list')).delete()
-					instance = model_class.objects.get(**{field_list[1]:item}) # default returns the model's id if called i.e. "print instance"
+					instance = model_class.objects.get(**{field_list[1]:item_en}) # default returns the model's id if called i.e. "print instance"
 					instance.delete() #comment to stop delete
 				messages.success(request, 'Selected fields deleted')
 				#return HttpResponseRedirect('/Directories/') 
 				return HttpResponseRedirect(reverse('Directories:index'))
 			else:
-				return HttpResponse('ERROR in POST -- Return to form submission')
+				#will probably return the form with errors -- not actually tested
+				return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
+	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
+	'model_name':model_name, 'form':form})
 		elif "_edit" in request.POST:
 			print "You pressed update fields button in list template"
-			form = selectForm2(request.POST, my_choices = field_choices)
+			form = selectForm2(request.POST, my_choices = field_choices, prefix="select")
 			if form.is_valid(): # All validation rules pass
 				print "selectForm VALID!"
 				edit_items = form.cleaned_data['select_fields']
@@ -201,16 +188,38 @@ def dlist(request):
 					print count		
 				return HttpResponseRedirect(reverse('Directories:edit_models'))
 			else:
-				print "form errors: ", form.errors
-				return HttpResponse('ERROR in POST -- Return to form submission')
+				#will probably return the form with errors -- not actually tested
+				return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
+	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
+	'model_name':model_name, 'form':form, 'form_drop_list': form_drop_list})
+################################################################
+	elif request.method == 'GET':
+		print "get request"
+		if "_list" in request.GET:
+			form_drop_list = listForm(request.GET, prefix="drop_list") 
+			clean(request)
+			print "i am in _list submit button"
+			if form_drop_list.is_valid(): # All validation rules pass
+				print "bound form, get data"
+				mod_classes = form_drop_list.cleaned_data['mod_classes']
+				del request.session['model_table']	
+				request.session['model_table'] = mod_classes	
+				print "success"
+				return HttpResponseRedirect(reverse('Directories:list_models'))		
+			else:
+				return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
+	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
+	'model_name':model_name, 'form':form, 'form_drop_list': form_drop_list})
+####################################################################
 	else:
 ######## check form to have checkboxes
-		form = selectForm2(my_choices = field_choices)
+		form = selectForm2(my_choices = field_choices, prefix="select")
+		form_drop_list = listForm(prefix="drop_list")
 		print "no POST - form: ", form.errors
 		print "unbound form"
 	return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
 	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
-	'model_name':model_name, 'form':form})
+	'model_name':model_name, 'form':form, 'form_drop_list': form_drop_list})
 	
 '''
 	View that updates a selected field. The idea is to create a queryset that will as an argument the field value that was
@@ -252,7 +261,6 @@ def modelEdit(request):
 				setattr(t, field_names[count], form_data)
 				print "data", getattr(t, field_names[count]).encode("utf8")
 			print 'end forloop'
-			#print "FORM DATA2:", form_data
 			##### alles epiloges gia to t:
 			##### Foo.objects.get(pk=????).update(**data) opou data = {'field1': 'value1', 'field5': 'value5', 'field7': 'value7'}
 			##### i kanw Foo.objects.get(pk=????).update(**{field_list[2]:item})
@@ -262,8 +270,8 @@ def modelEdit(request):
 			messages.success(request, 'Selected fields updated') # kalw ama kanei duplicate la8os na epistrefei validate_unique()
 			return HttpResponseRedirect(reverse('Directories:index')) 
 		else:
-			print "form errors: ", form.errors
-			return HttpResponse('ERROR -- Return to form submission')
+			# will return the form with an error message
+			return render(request, 'Directories/edit.html', {'form':form, 'field_list':field_list, 'f_val_list':f_val_list})
 	else:
 		for item in update_list:
 			t = model_class.objects.get(**{field_list[1]:item})
@@ -272,13 +280,12 @@ def modelEdit(request):
 	return render(request, 'Directories/edit.html', {'form':form, 'field_list':field_list, 'f_val_list':f_val_list})
 	
 '''
-	View for adding a new row to a model dynamically.
+	View for creating a new row to a model dynamically.
 '''
 @login_required(login_url='Directories:login')
 def modelUpdate(request):	
 	print "Creation page"
 	m_tb_name = request.session['model_table']
-	#m_tb_name = request.GET['model_classes_field']
 	print 'model_classes_field', m_tb_name
 	model_class = get_model('Directories', m_tb_name)
 	model_name = model_class.__name__
@@ -286,24 +293,23 @@ def modelUpdate(request):
 	if request.method == 'POST': 
 		print "m_tb_name is: ", m_tb_name
 		form_class = get_dynamic_form(m_tb_name)
-		form = form_class(request.POST)	
-		print "YEAHHHH!"			
+		form = form_class(request.POST)			
 		if form.is_valid(): # All validation rules pass
-			print "WOOOHOOOO form is valid!" 
+			print "form is valid!" 
 			row = form.save() 
 			form = dbForm()
 			#send a message to inform users that form submission was a success
 			messages.success(request, 'New model data created!')
 			return HttpResponseRedirect(reverse('Directories:index'))
 		else:
-			print "form errors: ", form.errors
-			return HttpResponse('ERROR -- Return to form submission')
+			#will probably return the form with errors
+			return render(request, 'Directories/create.html', {'form':form, 'model_name':model_name, 'field_names':field_names})
 		
 	else:
 		form_class = get_dynamic_form(m_tb_name)
 		form = form_class() # An unbound form
 		print "no form submission: ", form.errors
-	return render(request, 'Directories/create.html', {'model_name':model_name, 'field_names':field_names})
+	return render(request, 'Directories/create.html', {'form':form, 'model_name':model_name, 'field_names':field_names})
 
 '''
 	Logs out a user
@@ -330,16 +336,17 @@ def get_model_fields(model):
 def get_field_data(model, field):
 	return model.objects.values_list(field, flat=True)
 	
-def fields(request, field):
-	m_name = request.session['model_table']   # or you can model_class = request.session['model_table'] but need to serialize with JSON first
-	model_class = get_model('Directories', m_name)
-	m_values = model_class.objects.values_list(field, flat=True) # field = field_list[2]
-	for val in m_values:
-		field_choices.append( (val, val), )
-	return field_choices
-	
-def models():
-	apps = get_app('Directories')
-	for model in get_models(apps):
-		model_classes.append( (model._meta.verbose_name, model._meta.db_table), )
-	return model_classes
+def clean(request):
+	#check that model table name is not stored in the session before initiating it
+	if 'model_table' in request.session:
+		print "session model_table is:", request.session['model_table']
+		del request.session['model_table']	
+	else:
+		print "session model_table is null"
+	#clean field_list and field_choices to start from the beginning
+	if field_list:
+		del field_list[:]
+		print 'field_list', field_list
+	if field_choices:
+		del field_choices[:]
+		print 'field_list', field_choices
