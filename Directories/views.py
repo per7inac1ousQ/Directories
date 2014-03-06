@@ -39,8 +39,7 @@ fields_dict = []
 field_list = []
 field_models = []
 field_values = {}
-k = []
-c = []
+data = []
 update_list = []
 	
 def user_login(request):
@@ -167,7 +166,7 @@ def dlist(request):
 			#		print "item: ", item
 			#		instance = model_class.objects.get(**{field_list[1]:item}) # default returns the model's id if called i.e. "print instance"
 			#		update_list.append(item)
-			update_list.append(selected_objects)
+			update_list.append(pks)
 			request.session['u_list'] = update_list
 			#	request.session['u_list'] = update_list
 				# insert fields and their values into a dictionary
@@ -200,20 +199,11 @@ def dlist(request):
 def modelEdit(request):
 	print "Edit page"
 	#create a global list with the instances to be updated. This will be called in the modelEdit view
-	#mvar = request.GET.get('m_table')
 	mvar = request.session['model_table']
 	model_class = get_model('Directories', mvar)
-	#import pdb; pdb.set_trace()  for debugging but do not know how it works....
 	# create querysets using the field chosen in the list template
-	print 'update_list length:', len(request.session['u_list'])
 	update_items = request.session['u_list']
 	field_names = request.session['field_list']
-	print "field_list has: ", len(field_names)
-	for item in update_items:
-		print "item is:", item
-		# i vale get_or_create() -->> p.x. rate, created = VideoRate.objects.get_or_create()
-		#t = model_class.objects.get(**{field_names[1]:item})
-	#print "instance: ", t
 	# Get the field values list from dlist as shown below and then show the values in the edit template, inside the textboxes
 	f_val_list = sorted(field_values.items()) #sort puts them in alphabetical order but you may need to change this for other models
 	form_class = get_dynamic_form(mvar)
@@ -226,12 +216,20 @@ def modelEdit(request):
 			print "form valid! now start updating fields!" 
 			# use the form data to change the queryset 't' field values
 			print 'start forloop', len(field_names)
+			# iterate over update_list to get the pks from sent from the list template form
+			for count in range(0, len(update_items)):
+				for item in update_items:
+					t = model_class.objects.get(pk=item[count])
+					print "instance: ", t
+			# iterate over field_names to get the user form input for each field in field_names
 			for count in range(1, len(field_names)):
 				form_data = form.cleaned_data[field_names[count]]
-				print "FORM DATA:", form_data.encode("utf8")
+				data = form_data.encode("utf8")
+				print "FORM DATA:", data
+				print "field_name: ", field_names[count]
 				setattr(t, field_names[count], form_data)
 				print "data", getattr(t, field_names[count]).encode("utf8")
-			print 'end forloop'
+			#print 'end forloop'
 			##### alles epiloges gia to t:
 			##### Foo.objects.get(pk=????).update(**data) opou data = {'field1': 'value1', 'field5': 'value5', 'field7': 'value7'}
 			##### i kanw Foo.objects.get(pk=????).update(**{field_list[2]:item})
@@ -245,7 +243,7 @@ def modelEdit(request):
 			return render(request, 'Directories/edit.html', {'form':form, 'field_list':field_list, 'f_val_list':f_val_list})
 	else:
 		for item in update_list:
-			t = model_class.objects.get(**{field_list[1]:item})
+			t = model_class.objects.get(**{field_list[0]:item[0] for item in update_list})
 		form = form_class(instance=t)
 		print "something not working or submit button not pressed"
 	return render(request, 'Directories/edit.html', {'form':form, 'field_list':field_list, 'f_val_list':f_val_list})

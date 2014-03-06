@@ -9,4 +9,5 @@ def get_table(c_model):
 		class Meta:
 			model = model_class
 			sequence = ("selection", "...")
+			attrs = {"class": "mod_table"}
 	return ObjTable
