@@ -1,0 +1,8 @@
+{{object.lastname}}
+{{object.firstname}}
+{{object.phone_home_view}}
+{{object.phone_mobile_view}}
+{{object.address_view}}
+{{object.rank_id}}
+{{object.public_view}}
+{{object.last_update}}

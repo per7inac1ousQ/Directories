@@ -7,7 +7,7 @@ import itertools
 import collections
 import logging
 from django_auth_ldap.backend import LDAPBackend
-from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic, loginForm, listForm
+from Directories.forms import dbForm, editForm, get_dynamic_form, selectForm, selectForm2, get_fields_dynamic, loginForm#, listForm
 from Directories.models import Department, Attributes, Employees, Instructors, Katefth, KatefthKykloi, Kykloi, KykloiExamina, ModuleKykloi, Modules, ModulesTutors, PubInstr, PubTypes, Publications, Ranks, Service, Users, Works
 from django import forms
 from django.core import serializers
@@ -140,8 +140,8 @@ def dlist(request):
 	if not field_choices:
 		for val in m_values:
 			field_choices.append( (val, val), )
-	form = selectForm2(my_choices = field_choices, prefix="select")
-	form_drop_list = listForm(prefix="drop_list") #for the models dropdown list       
+	form = selectForm2(my_choices = field_choices)
+	#form_drop_list = listForm(prefix="drop_list") #for the models dropdown list       
 	#z = remove_field_list(model_class) ###################################!!NOTE: removes field_list. you may need 
 	if request.method == 'POST':
 		if "_delete" in request.POST: 
@@ -170,7 +170,7 @@ def dlist(request):
 	'model_name':model_name, 'form':form})
 		elif "_edit" in request.POST:
 			print "You pressed update fields button in list template"
-			form = selectForm2(request.POST, my_choices = field_choices, prefix="select")
+			form = selectForm2(request.POST, my_choices = field_choices)
 			if form.is_valid(): # All validation rules pass
 				print "selectForm VALID!"
 				edit_items = form.cleaned_data['select_fields']
@@ -191,35 +191,15 @@ def dlist(request):
 				#will probably return the form with errors -- not actually tested
 				return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
 	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
-	'model_name':model_name, 'form':form, 'form_drop_list': form_drop_list})
-################################################################
-	elif request.method == 'GET':
-		print "get request"
-		if "_list" in request.GET:
-			form_drop_list = listForm(request.GET, prefix="drop_list") 
-			clean(request)
-			print "i am in _list submit button"
-			if form_drop_list.is_valid(): # All validation rules pass
-				print "bound form, get data"
-				mod_classes = form_drop_list.cleaned_data['mod_classes']
-				del request.session['model_table']	
-				request.session['model_table'] = mod_classes	
-				print "success"
-				return HttpResponseRedirect(reverse('Directories:list_models'))		
-			else:
-				return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
-	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
-	'model_name':model_name, 'form':form, 'form_drop_list': form_drop_list})
-####################################################################
+	'model_name':model_name, 'form':form})
 	else:
-######## check form to have checkboxes
-		form = selectForm2(my_choices = field_choices, prefix="select")
-		form_drop_list = listForm(prefix="drop_list")
+		form = selectForm2(my_choices = field_choices)
 		print "no POST - form: ", form.errors
 		print "unbound form"
 	return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
 	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
-	'model_name':model_name, 'form':form, 'form_drop_list': form_drop_list})
+	'model_name':model_name, 'form':form})
+
 	
 '''
 	View that updates a selected field. The idea is to create a queryset that will as an argument the field value that was
@@ -318,6 +298,9 @@ def user_logout(request):
 	logout(request)
 	messages.success(request, 'Succesfully logged out') 
 	return HttpResponseRedirect(reverse('Directories:login'))
+	
+def search(request):
+	return SearchView(template='list.html')(request)
 	
 #returns a list of field names
 def create_field_list(model):
