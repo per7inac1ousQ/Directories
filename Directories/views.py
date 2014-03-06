@@ -30,6 +30,7 @@ from django.contrib.auth.decorators import login_required
 from haystack.forms import ModelSearchForm
 from haystack.query import SearchQuerySet
 from haystack.views import SearchView
+from Directories.tables import get_table
 
 
 model_classes = []
@@ -140,65 +141,54 @@ def dlist(request):
 	if not field_choices:
 		for val in m_values:
 			field_choices.append( (val, val), )
-	form = selectForm2(my_choices = field_choices)
-	#form_drop_list = listForm(prefix="drop_list") #for the models dropdown list       
+	table_class = get_table(m_tb_name)
+	table = table_class(model_class.objects.all())
+	table.paginate(page=request.GET.get('page', 1), per_page=25)
+	#form = selectForm2(my_choices = field_choices)     
 	#z = remove_field_list(model_class) ###################################!!NOTE: removes field_list. you may need 
 	if request.method == 'POST':
+		pks = request.POST.getlist("selection")
+		print "pks ======", pks
+		selected_objects = model_class.objects.filter(pk__in=pks)
+		print "selected_objects are: ", selected_objects
 		if "_delete" in request.POST: 
 			print "_delete pressed"
-			form = selectForm2(request.POST, my_choices = field_choices)
-			if form.is_valid(): # All validation rules pass
-				print "FORM VALID!"
-		#### Below i have a possible approach to my problem on how to get a specific Attributes row using user submitted form data
-		#### Attributes.objects.get(name=product_form.cleaned_data['select_fields']) 
-				delete_items = form.cleaned_data['select_fields']
-				print "delete_items", delete_items
-				items = [value for value in delete_items]
-				for item in items:
-					item_en = item.encode("utf8")
-					print "encoded item:", item_en
-#######	MyModel.objects.filter(id__in=request.POST.getlist('delete_list')).delete()
-					instance = model_class.objects.get(**{field_list[1]:item_en}) # default returns the model's id if called i.e. "print instance"
-					instance.delete() #comment to stop delete
-				messages.success(request, 'Selected fields deleted')
-				#return HttpResponseRedirect('/Directories/') 
-				return HttpResponseRedirect(reverse('Directories:index'))
-			else:
-				#will probably return the form with errors -- not actually tested
-				return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
-	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
-	'model_name':model_name, 'form':form})
+			selected_objects.delete()
+			messages.success(request, 'Selected fields deleted')
+			return HttpResponseRedirect(reverse('Directories:index'))
 		elif "_edit" in request.POST:
 			print "You pressed update fields button in list template"
-			form = selectForm2(request.POST, my_choices = field_choices)
-			if form.is_valid(): # All validation rules pass
-				print "selectForm VALID!"
-				edit_items = form.cleaned_data['select_fields']
-				items = [value.encode("utf8") for value in edit_items]
-				for item in items:
-					print "item: ", item
-					instance = model_class.objects.get(**{field_list[1]:item}) # default returns the model's id if called i.e. "print instance"
-					update_list.append(item)
-				request.session['u_list'] = update_list
+			#form = selectForm2(request.POST, my_choices = field_choices)
+			#if form.is_valid(): # All validation rules pass
+			#	print "selectForm VALID!"
+			#	edit_items = form.cleaned_data['select_fields']
+			#	items = [value.encode("utf8") for value in edit_items]
+			#	for item in items:
+			#		print "item: ", item
+			#		instance = model_class.objects.get(**{field_list[1]:item}) # default returns the model's id if called i.e. "print instance"
+			#		update_list.append(item)
+			update_list.append(selected_objects)
+			request.session['u_list'] = update_list
+			#	request.session['u_list'] = update_list
 				# insert fields and their values into a dictionary
-				for count in reversed(range(1, len(field_list))):
-					f_val = getattr(instance, field_list[count])
-					field_values[field_list[count]] = f_val
-					print "sooooo we have field_values: ", field_values
-					print count		
-				return HttpResponseRedirect(reverse('Directories:edit_models'))
-			else:
+			#	for count in reversed(range(1, len(field_list))):
+			#		f_val = getattr(instance, field_list[count])
+			#		field_values[field_list[count]] = f_val
+			#		print "sooooo we have field_values: ", field_values
+			#		print count		
+			return HttpResponseRedirect(reverse('Directories:edit_models'))
+			#else:
 				#will probably return the form with errors -- not actually tested
-				return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
-	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
-	'model_name':model_name, 'form':form})
-	else:
-		form = selectForm2(my_choices = field_choices)
-		print "no POST - form: ", form.errors
-		print "unbound form"
+			#	return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
+	#'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
+	#'model_name':model_name, 'form':form})
+	#else:
+		#form = selectForm2(my_choices = field_choices)
+	#	print "no POST - form: ", form.errors
+	#	print "unbound form"
 	return render(request, 'Directories/list.html', {'model_class':model_class, 'model_name': model_name, 
 	'model_list':model_list, 'fields':fields, 'field_names':field_names, 'field_list':field_list, 
-	'model_name':model_name, 'form':form})
+	'model_name':model_name, 'table':table})
 
 	
 '''
@@ -220,8 +210,9 @@ def modelEdit(request):
 	field_names = request.session['field_list']
 	print "field_list has: ", len(field_names)
 	for item in update_items:
+		print "item is:", item
 		# i vale get_or_create() -->> p.x. rate, created = VideoRate.objects.get_or_create()
-		t = model_class.objects.get(**{field_names[1]:item})
+		#t = model_class.objects.get(**{field_names[1]:item})
 	#print "instance: ", t
 	# Get the field values list from dlist as shown below and then show the values in the edit template, inside the textboxes
 	f_val_list = sorted(field_values.items()) #sort puts them in alphabetical order but you may need to change this for other models

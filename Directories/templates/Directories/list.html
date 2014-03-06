@@ -1,5 +1,6 @@
 {% extends "Directories/base.html" %}
-{% load dir_extras %} 
+{% load dir_extras %}
+{% load render_table from django_tables2 %} 
 {% load bootstrap3 %}
 {% block title %} Directories App {% endblock %}
 <body>
@@ -7,48 +8,8 @@
 	<div id="content" align="center">
 		<h2> List of Directories! </h2> 
 		<br />
-		<!-- i am calling my custom inclusion tag. I have defined the tag(function) in my dir_extras.py which includes all my custom template tags. I run the template code of the function in the model_data.html and create the output -->		
-		<table class="data-listing">
-		<thead>
-		{% with fields|slice:"1:" as sliced_fields %}
-			<tr>
-			{% for field in sliced_fields %}
-					<th class="column-{{ field.verbose_name|slugify }}">{{ field.verbose_name }}</th>
-			{% endfor %}
-			</tr>
-		{% endwith %}
-		</thead>
 		<form action="" method="post">	{% csrf_token %}
-		<tbody>
-		{% with field_names|slice:"1:" as sliced_fnames %}		
-			<tr>
-			{% for f_name in sliced_fnames %}
-				{% if f_name = sliced_fnames.0 %}
-					<td>
-						<ul id="checkFields">
-							{% for x,y in form.fields.select_fields.choices %}
-						<li>
-							<input id="checkbox" name="select_fields" type="checkbox" value="{{x}}" /> 
-							{% if y|length > 1000 %}
-								{{ y|truncatewords:20 }}
-							{% else %}
-								{{y}}
-							{% endif %} 
-							<br />
-						</li>
-							{% endfor %}
-						</ul>
-						<!--{0{form.as_p}}-->
-					</td>
-				{% else %}
-					<td class="column-{{ f_name|slugify }}" name="column-{{ f_name|slugify }}">
-						{% field_data model_name f_name %} 
-					</td>	
-				{% endif %}
-			{% endfor %}
-		{% endwith %}
-		</tbody>
-		</table> <br />
+		{% render_table table %} <br />
 		{% buttons %}
 			<button type="submit" name="_delete" class="btn btn-primary"/>
 				{% bootstrap_icon "asterisk" %} Delete selected items
